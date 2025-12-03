@@ -1,0 +1,312 @@
+═══════════════════════════════════════════════════════════════════════════════
+   GOOGLE ANALYTICS 4 - SVI EVENTI ZA AISAJT.COM
+   Property ID: G-6C046QS9HG
+═══════════════════════════════════════════════════════════════════════════════
+
+───────────────────────────────────────────────────────────────────────────────
+⭐⭐⭐ PRIORITET 1 - LEAD GENERATION (NAJBITNIJI!) ⭐⭐⭐
+───────────────────────────────────────────────────────────────────────────────
+
+Event Name: generate_lead
+
+📍 Gde se okida:
+   - Kada korisnik uspešno pošalje kontakt formu na Contact page
+   - Kada korisnik uspešno pošalje kontakt formu na Home page
+
+📊 Parametri:
+   - event_category: "Lead Generation"
+   - event_label: "Contact Form - Success" ili "Home Contact Form - Success"
+   - value: 1
+   - currency: "EUR"
+   - lead_source: "contact_page" ili "home_page"
+   - language: "sr" ili "en"
+   - user_name: Ime korisnika
+
+🎯 Kako dodati u GA4:
+   1. Idite na Google Analytics → Configure → Events
+   2. Pronađite event: "generate_lead"
+   3. Kliknite "Mark as conversion" ✅
+   4. Sačuvajte
+   
+   ⭐ OVO JE NAJVAŽNIJI EVENT - praćenje lead-ova! ⭐
+
+
+───────────────────────────────────────────────────────────────────────────────
+⭐⭐ PRIORITET 2 - CTA BUTTONS (Dugmad koja vode na Contact) ⭐⭐
+───────────────────────────────────────────────────────────────────────────────
+
+Event Name: cta_click
+
+📍 Gde se okida:
+   1. "Kontakt" dugme u Top Navigation
+   2. "Kontakt" dugme u Mobile Menu
+   3. "Kontakt" dugme u Side Navigation
+   4. "Zakažite Besplatnu Konsultaciju" - Video sekcija
+   5. "Saznaj Više - Web Dizajn" - Services sekcija
+   6. "Saznaj Više - Baze Podataka" - Services sekcija
+   7. "Saznaj Više - Online Marketing" - Services sekcija
+   8. "Razgovarajmo o Vašem Projektu" - Portfolio sekcija
+
+📊 Parametri:
+   - event_category: "Engagement"
+   - event_label: Naziv dugmeta (npr. "Kontakt - Top Navigation")
+   - location: Lokacija na sajtu (npr. "top_nav", "services_section")
+   - language: "sr" ili "en"
+
+🎯 Kako dodati u GA4:
+   1. Idite na Reports → Engagement → Events
+   2. Pronađite event: "cta_click"
+   3. Kreirajte custom report:
+      - Dimension: event_label
+      - Metric: Event count
+   4. Videćete koji CTA dugmad najviše klikaju korisnici
+
+
+───────────────────────────────────────────────────────────────────────────────
+⭐ PRIORITET 3 - OSTALI EVENTI (Portfolio, Navigacija, Kontakt info) ⭐
+───────────────────────────────────────────────────────────────────────────────
+
+═══════════════════════════════════════════════════════════════════════════════
+A) PORTFOLIO CLICKS
+═══════════════════════════════════════════════════════════════════════════════
+
+Event Name: portfolio_click
+
+📍 Gde se okida:
+   - Klik na bilo koju portfolio karticu:
+     • Kralj Residence
+     • BN Autofolije
+     • Prestige Gradnja
+     • Custom RC Parts
+     • White Club
+     • Pokloni Portret
+     • IN-STAN
+
+📊 Parametri:
+   - event_category: "Engagement"
+   - event_label: Naziv projekta (npr. "Kralj Residence")
+   - project_url: URL projekta
+   - language: "sr" ili "en"
+
+🎯 Kako dodati u GA4:
+   1. Reports → Engagement → Events
+   2. Pronađite: "portfolio_click"
+   3. Custom report:
+      - Dimension: event_label
+      - Metric: Event count
+   4. Videćete koji projekti najviše interesuju posetioce
+
+
+═══════════════════════════════════════════════════════════════════════════════
+B) NAVIGATION CLICKS
+═══════════════════════════════════════════════════════════════════════════════
+
+Event Name: navigation_click
+
+📍 Gde se okida:
+   - Klik na "Services" u navigaciji
+   - Klik na "Portfolio" u navigaciji
+   - Klik na "About Us" u navigaciji
+   (Desktop, Mobile i Side navigation)
+
+📊 Parametri:
+   - event_category: "Navigation"
+   - event_label: Destinacija (npr. "Services", "Portfolio")
+   - language: "sr" ili "en"
+
+🎯 Kako dodati u GA4:
+   1. Reports → Engagement → Events
+   2. Pronađite: "navigation_click"
+   3. Videćete kako korisnici navigišu kroz sajt
+
+
+═══════════════════════════════════════════════════════════════════════════════
+C) CONTACT INFO CLICKS
+═══════════════════════════════════════════════════════════════════════════════
+
+Event Name: contact_info_click
+
+📍 Gde se okida:
+   - Klik na email link (mailto:office@aisajt.com)
+   - Klik na telefon link (tel:+381613091583)
+   (U header-u, footer-u, Contact page)
+
+📊 Parametri:
+   - event_category: "Engagement"
+   - event_label: "email - office@aisajt.com" ili "phone - +381613091583"
+   - language: "sr" ili "en"
+
+🎯 Kako dodati u GA4:
+   1. Reports → Engagement → Events
+   2. Pronađite: "contact_info_click"
+   3. Videćete koliko korisnika direktno kontaktira
+
+
+───────────────────────────────────────────────────────────────────────────────
+DODATNI EVENTI - Form Interaction (automatski)
+───────────────────────────────────────────────────────────────────────────────
+
+1) form_interaction
+   - Kada korisnik počne da popunjava formu (svako polje)
+   - Category: "Lead Generation"
+
+2) form_submit_attempt
+   - Kada korisnik klikne "Pošalji" (pre nego što se forma pošalje)
+   - Category: "Lead Generation"
+
+3) form_submit_error
+   - Kada dođe do greške pri slanju forme
+   - Category: "Lead Generation"
+
+
+═══════════════════════════════════════════════════════════════════════════════
+KAKO PRATITI EVENTOVE U GOOGLE ANALYTICS 4
+═══════════════════════════════════════════════════════════════════════════════
+
+───────────────────────────────────────────────────────────────────────────────
+KORAK 1: Real-Time Provera (Da li eventi stižu?)
+───────────────────────────────────────────────────────────────────────────────
+
+1. Idite na: https://analytics.google.com
+2. Izaberite Property: G-6C046QS9HG
+3. Kliknite: Reports → Realtime
+4. Testirajte akciju na sajtu (npr. pošaljite formu)
+5. Za 5-30 sekundi videćete event u "Event count by Event name"
+
+
+───────────────────────────────────────────────────────────────────────────────
+KORAK 2: Kreiranje Konverzija (Za lead tracking)
+───────────────────────────────────────────────────────────────────────────────
+
+1. Idite na: Configure → Events
+2. Pronađite event: "generate_lead"
+3. Kliknite na toggle: "Mark as conversion" ✅
+4. Sačuvajte
+
+Sada možete pratiti koliko lead-ova dobijate!
+
+
+───────────────────────────────────────────────────────────────────────────────
+KORAK 3: Kreiranje Custom Report-a (Za detaljnu analizu)
+───────────────────────────────────────────────────────────────────────────────
+
+1. Idite na: Explore → Blank
+2. Dodajte Dimensions:
+   - Event name
+   - Event label (za detalje)
+   - Language (custom parameter)
+   - Lead source (custom parameter)
+3. Dodajte Metrics:
+   - Event count (broj događaja)
+   - Total users (broj korisnika)
+4. Filter: Event name = "generate_lead" (ili drugi event)
+5. Sačuvajte report
+
+
+───────────────────────────────────────────────────────────────────────────────
+KORAK 4: Gledanje Standardnih Report-ova
+───────────────────────────────────────────────────────────────────────────────
+
+Reports → Engagement → Events
+
+Ovde možete videti:
+- Koliko puta se svaki event desio
+- Koliko korisnika je triggerovalo svaki event
+- Trend po danima/nedeljama
+
+
+═══════════════════════════════════════════════════════════════════════════════
+NAJVAŽNIJE METRIKE ZA PRAĆENJE
+═══════════════════════════════════════════════════════════════════════════════
+
+1. ⭐ CONVERSION RATE (Lead generisanje)
+   Formula: (generate_lead / page_views na /contact) × 100%
+   Dobra vrednost: 5-10% za B2B
+
+2. 📊 CTA EFFECTIVENESS (Koji CTA dugmad rade najbolje)
+   Gde: Reports → Events → "cta_click" → event_label
+   Pratite: Koji tekst/pozicija dugmeta privlači najviše klikova
+
+3. 🎯 PORTFOLIO ENGAGEMENT (Koji projekti privlače pažnju)
+   Gde: Reports → Events → "portfolio_click" → event_label
+   Pratite: Koji projekti dobijaju najviše klikova
+
+4. 🚫 FORM ABANDONMENT (Koliko ljudi počne ali ne završi formu)
+   Formula: ((form_interaction / 3) - generate_lead) / (form_interaction / 3) × 100%
+   Dobra vrednost: < 50%
+
+5. 📈 LEAD SOURCE COMPARISON (Contact page vs Home page)
+   Gde: Custom report sa "lead_source" dimension
+   Pratite: Odakle dolaze lead-ovi
+
+6. 🌍 LANGUAGE PERFORMANCE (Srpski vs Engleski korisnici)
+   Gde: Custom report sa "language" dimension
+   Pratite: Koji jezik bolje konvertuje
+
+
+═══════════════════════════════════════════════════════════════════════════════
+FACEBOOK PIXEL EVENTI (Automatski)
+═══════════════════════════════════════════════════════════════════════════════
+
+Pixel ID: 861131543475701
+
+Eventi koji se šalju:
+- "Lead" event - kada se generate_lead triggeruje (glavni event)
+- "PageView" - automatski na svakoj stranici
+
+Provera:
+1. Facebook Events Manager
+2. Test Events → Real-Time
+3. Videćete "Lead" event kada neko pošalje formu
+
+
+═══════════════════════════════════════════════════════════════════════════════
+REKAPITULACIJA - SVI EVENTI PO PRIORITETU
+═══════════════════════════════════════════════════════════════════════════════
+
+⭐⭐⭐ PRIORITET 1 (Najbitniji):
+   ✅ generate_lead - GLAVNI LEAD EVENT
+
+⭐⭐ PRIORITET 2 (Srednji - CTA buttons):
+   ✅ cta_click - Sva dugmad koja vode na Contact page
+
+⭐ PRIORITET 3 (Manji - Portfolio, Navigation, Contact info):
+   ✅ portfolio_click - Klikovi na portfolio projekte
+   ✅ navigation_click - Navigacija kroz meni
+   ✅ contact_info_click - Klikovi na email/telefon
+
+📊 Automatski (Form tracking):
+   ✅ form_interaction - Korisnik počinje da popunjava
+   ✅ form_submit_attempt - Klik na "Pošalji"
+   ✅ form_submit_error - Greška pri slanju
+
+
+═══════════════════════════════════════════════════════════════════════════════
+KAKO TESTIRATI DA LI RADI?
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Otvorite sajt: https://aisajt.com (ili http://localhost:5173)
+2. Otvorite Browser Console: F12 (ili Ctrl+Shift+I)
+3. Uradite akciju (npr. kliknite CTA dugme)
+4. U konzoli videćete: ✅ Event tracked: {...}
+5. Proverite u GA4 Real-Time da li event stigao (5-30 sekundi)
+
+
+═══════════════════════════════════════════════════════════════════════════════
+KONTAKT ZA PITANJA
+═══════════════════════════════════════════════════════════════════════════════
+
+Email: office@aisajt.com
+Telefon: +381 61 3091583
+Website: https://aisajt.com
+
+
+═══════════════════════════════════════════════════════════════════════════════
+DATUM IMPLEMENTACIJE: 2025-01-XX
+VERZIJA: 1.0
+═══════════════════════════════════════════════════════════════════════════════
+
+🎉 SVA DUGMAD SU SADA TRACKIRANA! 🎉
+
+Možete početi da pratite kako korisnici interaguju sa sajtom!
+

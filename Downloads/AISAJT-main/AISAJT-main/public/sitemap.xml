@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+        http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+  
+  <!-- AI izrada sajtova - Početna stranica -->
+  <url>
+    <loc>https://aisajt.com/</loc>
+    <lastmod>2024-12-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- AI websajt izrada - Kontakt stranica -->
+  <url>
+    <loc>https://aisajt.com/contact</loc>
+    <lastmod>2024-12-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Izrada veb sajta - Uslovi korišćenja -->
+  <url>
+    <loc>https://aisajt.com/terms</loc>
+    <lastmod>2024-12-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <!-- Profesionalna izrada veb sajta - Politika privatnosti -->
+  <url>
+    <loc>https://aisajt.com/privacy</loc>
+    <lastmod>2024-12-02</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+
+</urlset>

@@ -1,0 +1,18 @@
+# Handle client-side routing
+/* /index.html 200
+
+# Redirect www to non-www (for both HTTP and HTTPS)
+www.aisajt.com/* https://aisajt.com/:splat 301!
+
+# Redirect HTTP to HTTPS for non-www
+http://aisajt.com/* https://aisajt.com/:splat 301!
+
+# Redirect Netlify subdomain to primary domain
+aisajt.netlify.app/* https://aisajt.com/:splat 301!
+
+# Serve custom robots.txt for Netlify subdomain
+/robots.txt /netlify-robots.txt 200!  Host=aisajt.netlify.app
+
+# Handle SPA routes
+/terms /index.html 200
+/privacy /index.html 200

@@ -1,0 +1,15 @@
+# AI izrada sajtova - robots.txt
+# https://aisajt.com
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap za AI websajt izrada
+Sitemap: https://aisajt.com/sitemap.xml
+
+# Crawl-delay (opciono)
+Crawl-delay: 1
+
+# SEO optimizacija za: AI izrada sajtova, AI websajt izrada, Izrada veb sajta
