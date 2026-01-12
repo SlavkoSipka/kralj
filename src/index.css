@@ -1,0 +1,520 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: 'Cormorant Garamond', serif;
+    scroll-behavior: smooth !important;
+    scroll-padding-top: 20vh;
+    overflow-x: hidden;
+    max-width: 100vw;
+    font-size: 14px;
+    
+    @media (min-width: 768px) {
+      font-size: 16px;
+    }
+  }
+  
+  body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
+  /* Optimize text rendering */
+  * {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  .container-fluid {
+    @apply w-full mx-auto;
+  }
+
+  .text-cream-100 {
+    @apply text-[#F5E6D3];
+  }
+
+  .text-cream-200 {
+    @apply text-[#E6D5C3];
+  }
+
+  .aspect-w-16 {
+    @apply relative pb-[56.25%];
+  }
+
+  .aspect-w-16 > * {
+    @apply absolute inset-0 w-full h-full;
+  }
+
+  .counter {
+    transition: all 0.5s ease-out;
+  }
+
+  .counter.animate {
+    animation: countUp 2s ease-out forwards;
+  }
+
+  /* Pravila za BackgroundSlideshow */
+  .background-slideshow-container {
+    overflow: visible !important;
+    position: relative;
+    width: 100%;
+    height: 100vh; /* Prilagodite visinu prema potrebi */
+  }
+
+  .background-slideshow-image {
+    width: auto !important; /* Zadržava prirodnu širinu na mobilnim */
+    height: auto !important; /* Zadržava prirodnu visinu na mobilnim */
+    max-width: none !important;
+    max-height: none !important;
+    object-position: center !important;
+  }
+
+  @media (max-width: 767px) {
+    .background-slideshow-image {
+      object-fit: none !important; /* Uklanja object-fit na mobilnim uređajima */
+    }
+  }
+
+  @media (min-width: 768px) {
+    .background-slideshow-image {
+      object-fit: cover !important; /* Osigurava popunjavanje ekrana na desktopu */
+      width: 100% !important;
+      height: 100% !important;
+      transform-origin: center !important;
+    }
+  }
+}
+
+/* Villas scroll container */
+.villas-scroll-container {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.villas-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Navigation buttons */
+.scroll-nav-button {
+  @apply fixed z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/90 text-[#D4AF37] border border-[#D4AF37]/20 backdrop-blur-sm transition-all duration-200 hover:bg-black hover:border-[#D4AF37]/40 hover:scale-105 active:scale-95;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.scroll-nav-button.prev {
+  left: 1rem;
+}
+
+.scroll-nav-button.next {
+  right: 1rem;
+}
+
+/* Scroll Animation Base States */
+.scroll-animate {
+  opacity: 0;
+  transform: translateY(30px);
+  
+  @media (min-width: 768px) {
+    transform: translateY(60px);
+  }
+
+  transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity;
+}
+
+.scroll-animate.from-left {
+  transform: translateX(-40px);
+  
+  @media (min-width: 768px) {
+    transform: translateX(-80px);
+  }
+
+  will-change: transform, opacity;
+}
+
+.scroll-animate.from-right {
+  transform: translateX(40px);
+  
+  @media (min-width: 768px) {
+    transform: translateX(80px);
+  }
+
+  will-change: transform, opacity;
+}
+
+.scroll-animate.from-bottom {
+  transform: translateY(40px);
+  
+  @media (min-width: 768px) {
+    transform: translateY(80px);
+  }
+
+  will-change: transform, opacity;
+}
+
+/* Animation States */
+.scroll-animate.animate-in {
+  opacity: 1;
+  transform: translate(0, 0);
+  transition: all 2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Delay Utilities */
+.delay-100 { transition-delay: 200ms; }
+.delay-200 { transition-delay: 400ms; }
+.delay-300 { transition-delay: 600ms; }
+.delay-400 { transition-delay: 800ms; }
+.delay-500 { transition-delay: 1000ms; }
+.delay-600 { transition-delay: 1200ms; }
+.delay-700 { transition-delay: 1200ms; }
+.delay-800 { transition-delay: 1600ms; }
+
+/* Floor Section Swiper customization */
+.floor-section-swiper {
+  padding-bottom: 3rem !important;
+  overflow: hidden !important;
+  padding: 1rem !important;
+  margin: -1rem -1rem 0 !important;
+}
+
+.floor-section-swiper .swiper-wrapper {
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.floor-section-swiper .swiper-slide {
+  height: auto !important;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 100% !important;
+}
+
+.floor-section-swiper .swiper-button-next,
+.floor-section-swiper .swiper-button-prev {
+  color: #D4AF37;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  width: 40px;
+  height: 40px;
+  background: rgba(26, 22, 20, 0.8);
+  border-radius: 50%;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  transform: translateX(0);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floor-section-swiper .swiper-button-next {
+  right: 5px;
+}
+
+.floor-section-swiper .swiper-button-prev {
+  left: 5px;
+}
+
+.floor-section-swiper .swiper-button-next:hover,
+.floor-section-swiper .swiper-button-prev:hover {
+  opacity: 1;
+  background: rgba(26, 22, 20, 0.95);
+  border-color: rgba(212, 175, 55, 0.4);
+  transform: scale(1.1);
+}
+
+.floor-section-swiper .swiper-button-next::after,
+.floor-section-swiper .swiper-button-prev::after {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.floor-section-swiper .swiper-pagination-bullet {
+  background: #D4AF37;
+  opacity: 0.5;
+}
+
+.floor-section-swiper .swiper-pagination-bullet-active {
+  opacity: 1;
+}
+
+/* Swiper customization */
+.attractions-swiper {
+  padding-bottom: 3rem !important;
+  overflow: hidden !important;
+  padding: 1rem !important;
+  margin: -1rem -1rem 0 !important;
+}
+
+.attractions-swiper::-webkit-scrollbar {
+  display: none;
+}
+
+.attractions-swiper .swiper-slide {
+  opacity: 0;
+  transform: scale(0.85);
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  height: auto !important;
+}
+
+.attractions-swiper .swiper-slide-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.attractions-swiper .swiper-button-next,
+.attractions-swiper .swiper-button-prev {
+  color: #D4AF37;
+  opacity: 0.7;
+  transition: all 0.3s ease;
+  width: 40px;
+  height: 40px;
+  background: rgba(26, 22, 20, 0.8);
+  border-radius: 50%;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  transform: translateX(0);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  @media (min-width: 768px) {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+.attractions-swiper .swiper-button-next {
+  right: 5px;
+
+  @media (min-width: 768px) {
+    right: -25px;
+  }
+}
+
+.attractions-swiper .swiper-button-prev {
+  left: 5px;
+
+  @media (min-width: 768px) {
+    left: -25px;
+  }
+}
+
+.attractions-swiper .swiper-button-next:hover,
+.attractions-swiper .swiper-button-prev:hover {
+  opacity: 1;
+  background: rgba(26, 22, 20, 0.95);
+  border-color: rgba(212, 175, 55, 0.4);
+  transform: scale(1.1);
+}
+
+.attractions-swiper .swiper-button-next::after,
+.attractions-swiper .swiper-button-prev::after {
+  font-size: 1rem;
+  font-weight: bold;
+
+  @media (min-width: 768px) {
+    font-size: 1.5rem;
+  }
+}
+
+.attractions-swiper .swiper-pagination-bullet {
+  background: #D4AF37;
+  opacity: 0.5;
+}
+
+.attractions-swiper .swiper-pagination-bullet-active {
+  opacity: 1;
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scroll-behavior: smooth !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* Prevent vertical scroll on mobile card containers */
+@media (max-width: 1024px) {
+  .snap-x {
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+  }
+  
+  .snap-center {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
+  }
+}
+
+@layer utilities {
+  .animate-loading-bar {
+    animation: loadingBar 1s ease-in-out infinite;
+  }
+
+  .scroll-fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeIn 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .scroll-fade-in {
+      animation-play-state: running;
+    }
+  }
+
+  .no-js .scroll-fade-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .bg-radial-gradient {
+    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.8) 70%);
+  }
+}
+
+/* Existing animations */
+@keyframes modalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes loadingBar {
+  0% { width: 0; }
+  100% { width: 100%; }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  50% {
+    opacity: 0.5;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* New animations for ThankYouModal */
+@keyframes fadeInBackdrop {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.9;
+  }
+}
+
+@keyframes expandFromCenter {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Scroll Nav Button */
+.scroll-nav-button {
+  @apply absolute top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-black/90 text-[#D4AF37] border border-[#D4AF37]/20 backdrop-blur-sm transition-all duration-200 hover:bg-black hover:border-[#D4AF37]/40 hover:scale-105 active:scale-95;
+}
+
+.scroll-nav-button.prev {
+  @apply left-2;
+}
+
+.scroll-nav-button.next {
+  @apply right-2;
+}
+
+/* Properties page card container */
+.villas-grid {
+  overflow: visible !important;
+}
+
+.villas-grid > div {
+  overflow: visible !important;
+}
+
+.villas-grid > div > div {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.villas-grid > div > div::-webkit-scrollbar {
+  display: none;
+}
+
+.villas-grid > div > div > div {
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0;
+  transform: scale(0.85);
+}
+
+.villas-grid > div > div > div.visible {
+  opacity: 1;
+  transform: scale(1);
+}
