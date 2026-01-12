@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <!-- Home Page -->
+  <url>
+    <loc>https://kraljresidence.rs/</loc>
+    <lastmod>2025-01-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en" />
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739186475/A12_m1iz64.png</image:loc>
+      <image:title>Kralj Residence Vrnjačka Banja - Gradnja i prodaja luksuznih stanova</image:title>
+      <image:caption>Lider u gradnji stanova u Vrnjačkoj Banji - direktna prodaja od investitora</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Properties Page -->
+  <url>
+    <loc>https://kraljresidence.rs/properties</loc>
+    <lastmod>2025-01-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/properties" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/properties" />
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739578562/Kralj_k4_1_cwgmyh.png</image:loc>
+      <image:title>Stanovi za prodaju Vrnjačka Banja - Kralj Residence</image:title>
+      <image:caption>Kompletna ponuda stanova, apartmana i vila za prodaju u Vrnjačkoj Banji</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Location Page -->
+  <url>
+    <loc>https://kraljresidence.rs/location</loc>
+    <lastmod>2025-01-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/location" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/location" />
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739369610/HOTEL_KRALJ_1_2_phap0b.png</image:loc>
+      <image:title>Lokacija Kralj Residence Vrnjačka Banja</image:title>
+      <image:caption>Najbolje lokacije za stanove u Vrnjačkoj Banji - mapa i okolina</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Villa 3 Page -->
+  <url>
+    <loc>https://kraljresidence.rs/villa-3</loc>
+    <lastmod>2025-01-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/villa-3" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/villa-3" />
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739186470/A11_kc6iet.png</image:loc>
+      <image:title>Vila III stanovi za prodaju - Kralj Residence Vrnjačka Banja</image:title>
+      <image:caption>27 luksuznih stanova u Vili III sa bazenom i parking mestima</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Villa 4 Page -->
+  <url>
+    <loc>https://kraljresidence.rs/villa-4</loc>
+    <lastmod>2025-01-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/villa-4" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/villa-4" />
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739185443/A15_i5i4zp.png</image:loc>
+      <image:title>Vila IV stanovi za prodaju - Kralj Residence Vrnjačka Banja</image:title>
+      <image:caption>27 modernih stanova u Vili IV sa privatnim sadržajima</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Royal Aqua Page -->
+  <url>
+    <loc>https://kraljresidence.rs/royal-aqua</loc>
+    <lastmod>2025-01-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/royal-aqua" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/royal-aqua" />
+    <image:image>
+      <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739186475/A12_m1iz64.png</image:loc>
+      <image:title>Royal Aqua apartmani za prodaju - Kralj Residence Vrnjačka Banja</image:title>
+      <image:caption>27 ekskluzivnih apartmana u Royal Aqua kompleksu</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Case Study Page -->
+  <url>
+    <loc>https://kraljresidence.rs/o-projektu</loc>
+    <lastmod>2025-01-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/o-projektu" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/o-projektu" />
+  </url>
+</urlset>
