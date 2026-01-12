@@ -1,0 +1,130 @@
+═══════════════════════════════════════════════════════════════════════════
+  MANUFACTURER MANAGEMENT - NOVE KOLONE SUMMARY
+═══════════════════════════════════════════════════════════════════════════
+
+✅ DODATO 3 NOVE KOLONE U TABELU:
+
+1. SLUG (posle "Naziv")
+   - Monospace font
+   - Searchable
+   - Truncate sa ellipsis (max 180px)
+   - Hover prikazuje full text
+   - Format: "lowercase-with-dashes"
+   - Primer: "hemofarm-ad"
+
+2. LOGO (posle "Proizvođač")
+   - Thumbnail 40x40px
+   - Hover zoom 2x
+   - Clickable (otvara u novom tabu)
+   - Border radius 4px
+   - Fallback "-" ako nema loga
+
+3. OPIS (posle "Grad")
+   - Truncate 50 chars
+   - Hover prikazuje full text (tooltip)
+   - Searchable
+   - Max width 250px
+   - Cursor: help (?)
+
+═══════════════════════════════════════════════════════════════════════════
+
+NOVA STRUKTURA TABELE:
+
+1.  ID (sortable)
+2.  Naziv (sortable)
+3.  Slug ⭐ NOVO
+4.  Proizvođač
+5.  Logo ⭐ NOVO
+6.  Email
+7.  Website
+8.  Država
+9.  Grad
+10. Opis ⭐ NOVO
+11. Status
+12. Akcije
+
+═══════════════════════════════════════════════════════════════════════════
+
+SEARCH FUNKCIONALNOST:
+
+STARO (7 polja):
+  name, manufacturer, city, country, email, url
+
+NOVO (9 polja):
+  name, manufacturer, slug, city, country, email, url, description ⭐
+
+Novi placeholder:
+  "Pretraži po imenu, slug-u, opisu, gradu, email-u..."
+
+═══════════════════════════════════════════════════════════════════════════
+
+TESTIRANJE:
+
+1. ✅ Refresh stranicu (Ctrl + Shift + R)
+2. ✅ Proveri da li vidiš 3 nove kolone
+3. ✅ Hover preko loga → zoom 2x?
+4. ✅ Hover preko opisa → full text?
+5. ✅ Pretraži po slug-u (npr. "hemofarm")
+6. ✅ Pretraži po opisu (npr. "generičkih")
+7. ✅ Klikni logo → otvara novi tab?
+
+═══════════════════════════════════════════════════════════════════════════
+
+FILES UPDATED:
+
+1. src/pages/ManufacturerManagement.tsx
+   - Added 3 columns in thead
+   - Added 3 columns in tbody
+   - Updated search filter
+   - Updated placeholder
+
+2. src/pages/ManufacturerManagement.css
+   - Added .manufacturer-slug styles
+   - Added .manufacturer-logo styles
+   - Added .logo-thumbnail styles
+   - Added .manufacturer-description styles
+   - Added hover effects
+
+═══════════════════════════════════════════════════════════════════════════
+
+STATUS:
+
+Slug kolona:           ✅ ADDED
+Logo kolona:           ✅ ADDED
+Opis kolona:           ✅ ADDED
+Search za slug:        ✅ ADDED
+Search za opis:        ✅ ADDED
+Logo hover zoom:       ✅ ADDED
+Description hover:     ✅ ADDED
+CSS stilovi:           ✅ ADDED
+TypeScript errors:     ✅ 0
+Responsive:            ✅ YES
+
+═══════════════════════════════════════════════════════════════════════════
+
+KAKO IZGLEDA:
+
+┌────┬──────────┬──────────┬──────────┬──────┬────────┬────────┬──────────┐
+│ ID │ Naziv    │ Slug     │ Proizvod │ Logo │ Email  │ Status │ Akcije   │
+├────┼──────────┼──────────┼──────────┼──────┼────────┼────────┼──────────┤
+│ 1  │Hemofarm  │hemofarm  │ Hemof... │[IMG] │info... │Aktivan │[✎][🚫][×]│
+│    │          │   -ad    │          │40x40 │        │        │          │
+└────┴──────────┴──────────┴──────────┴──────┴────────┴────────┴──────────┘
+
+HOVER EFFECTS:
+- Logo: [IMG] → [ZOOM 2x]
+- Opis: "Vodeći proi..." → "Vodeći proizvođač generičkih lekova..."
+
+═══════════════════════════════════════════════════════════════════════════
+
+DOKUMENTACIJA:
+
+Detaljno objašnjenje: MANUFACTURER_NEW_COLUMNS.md
+
+═══════════════════════════════════════════════════════════════════════════
+
+Updated: 19. Decembar 2025 - 01:47
+Status: ✅ PRODUCTION READY
+TypeScript Errors: 0
+
+═══════════════════════════════════════════════════════════════════════════

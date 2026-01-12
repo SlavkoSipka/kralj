@@ -1,0 +1,57 @@
+═══════════════════════════════════════════════════════════════════════════
+  SUPABASE LIMIT FIX - QUICK SUMMARY
+═══════════════════════════════════════════════════════════════════════════
+
+PROBLEM:
+  - Prikazuje se samo 1000 proizvođača
+  - U bazi ima 3646 proizvođača
+  - Nedostaje 2646 proizvođača!
+
+UZROK:
+  - Supabase ima DEFAULT LIMIT od 1000 redova
+  - Query nije imao eksplicitan .limit()
+
+REŠENJE:
+  ✅ Dodato .limit(10000) u obe komponente
+  ✅ Dodato { count: 'exact' } za tačan broj
+  ✅ Dodato console.log za debug
+
+═══════════════════════════════════════════════════════════════════════════
+
+PROMENE:
+
+1. ManufacturerManagement.tsx (linija ~91):
+   BEFORE: .select('*')
+   AFTER:  .select('*', { count: 'exact' })
+           .limit(10000)
+
+2. VendorManagement.tsx (linija ~99):
+   BEFORE: .select('*')
+   AFTER:  .select('*', { count: 'exact' })
+           .limit(10000)
+
+═══════════════════════════════════════════════════════════════════════════
+
+TEST:
+
+1. Refresh stranicu (F5)
+2. Otvori Console (F12)
+3. Proveri:
+   ✅ "Loaded 3646 manufacturers out of 3646 total" (ne 1000!)
+   ✅ Admin Panel prikazuje "Ukupno proizvođača: 3646"
+   ✅ Search prikazuje sve rezultate
+   ✅ Pagination prikazuje sve stranice
+
+═══════════════════════════════════════════════════════════════════════════
+
+DODATNO KREIRANO:
+
+- fix-manufacturer-rls.sql (za RLS politike)
+- SUPABASE_LIMIT_FIX.md (detaljna dokumentacija)
+- QUICK_FIX_SUMMARY.txt (ovaj fajl)
+
+═══════════════════════════════════════════════════════════════════════════
+
+STATUS: ✅ FIXED (19. Decembar 2025 - 01:17)
+
+═══════════════════════════════════════════════════════════════════════════

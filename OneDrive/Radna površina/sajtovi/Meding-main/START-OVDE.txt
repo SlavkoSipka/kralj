@@ -1,0 +1,51 @@
+═══════════════════════════════════════════════════════════════
+   🎯 ANALYTICS SETUP - KORACI (Traje 10 minuta)
+═══════════════════════════════════════════════════════════════
+
+📋 KORAK 1: Supabase Analytics Setup (3 min)
+────────────────────────────────────────────────
+1. Otvori: https://supabase.com/dashboard
+2. Izaberi projekat
+3. SQL Editor (leva strana)
+4. + New query
+5. Otvori fajl: supabase-analytics-setup.sql (u projektu)
+6. Copy-paste SVE u SQL Editor
+7. Klikni "Run"
+8. Trebalo bi: ✅ "Analytics setup completed successfully!"
+
+
+📋 KORAK 2: Upload Proizvoda sa Popularity (3 min)
+────────────────────────────────────────────────
+1. Otvori Terminal (PowerShell)
+2. cd C:\Users\bogda\Downloads\Meding\Meding
+3. npm run sync-algolia
+4. Sačekaj 2-3 minuta
+5. Trebalo bi: ✅ "52445 proizvoda" uploaded
+
+
+📋 KORAK 3: [OPCIONO] Cron Job (1 min)
+────────────────────────────────────────────────
+1. Supabase → SQL Editor → + New query
+2. Otvori fajl: supabase-cron-setup.sql
+3. Copy-paste u SQL Editor
+4. Klikni "Run"
+
+
+📋 KORAK 4: TESTIRAJ! (2 min)
+────────────────────────────────────────────────
+1. Otvori: http://localhost:5173/
+2. Pretraži nešto (npr. "braun")
+3. Klikni na proizvod
+4. Idi u Supabase → Table Editor → product_analytics
+5. Trebalo bi da vidiš TRACKING podatke! ✅
+
+
+═══════════════════════════════════════════════════════════════
+   ✅ GOTOVO! Sve radi automatski od sada!
+═══════════════════════════════════════════════════════════════
+
+📖 Za detaljnije uputstvo: ANALYTICS-SETUP.md
+📊 Za SQL queries: analytics-queries.sql
+
+═══════════════════════════════════════════════════════════════
+
