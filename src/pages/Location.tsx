@@ -68,7 +68,7 @@ const Location = () => {
         <div 
           className="fixed inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: 'url("http://aislike.rs/Kralj1/A6.png")',
+            backgroundImage: 'url("/images/A6.png")',
             opacity: 0.35,
             filter: 'brightness(0.8) contrast(1.1)'
           }}
@@ -116,7 +116,7 @@ const Location = () => {
                 {/* Content Container */}
                 <div className="relative h-[calc(100vh-16rem)] overflow-hidden rounded-lg shadow-2xl">
                 <img
-                  src="http://aislike.rs/Kralj1/MAPAA.png"
+                  src="/images/MAPAA.png"
                   alt="Mapa lokacije"
                   className="w-full h-full object-contain transform hover:scale-110 transition-transform duration-700"
                   loading="lazy"
@@ -265,37 +265,37 @@ const Location = () => {
             >
               {[
                 {
-                  image: "http://aislike.rs/Kralj1/zamak kulture.jpg",
+                  image: "/images/zamak kulture.jpg",
                   title: "Zamak Belimarković",
                   description: "Zamak Belimarković, poznat i kao Dvorac kulture, predstavlja jedan od najznačajnijih kulturno-istorijskih spomenika Vrnjačke Banje. Izgrađen je 1888. godine u stilu italijanske renesanse."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/most ljubavi.jpg",
+                  image: "/images/most ljubavi.jpg",
                   title: "Most Ljubavi",
                   description: "Most ljubavi je jedan od najromantičnijih simbola Vrnjačke Banje. Prema legendi, parovi koji zaključaju katanac na mostu i bace ključ u reku, zauvek će ostati zajedno."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/banjski park.jpg",
+                  image: "/images/banjski park.jpg",
                   title: "Banjski park",
                   description: "Vrnjački park je živopisan prostor za druženje i zabavu koji objedinjuje prirodu, kulturu i istoriju, pružajući posetiocima mir i opuštanje među starim lipama i skulpturama."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/promenada.jpg",
+                  image: "/images/promenada.jpg",
                   title: "Promenada",
                   description: "Dugačka preko 2 km, predstavlja centralno mesto svih susreta u Vrnjačkoj Banji i obiluje udobnim mestima za predah na klupi ili osveženje u kafiću."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/japanski vrt.jpg",
+                  image: "/images/japanski vrt.jpg",
                   title: "Japanski vrt",
                   description: "Japanski vrt u Vrnjačkoj Banji predstavlja mirno utočište sa kaskadnim vodopadima, drvenim mostićem i čajnom kućicom. Pruža spokojni ambijent za odmor u prirodi."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/izvor_sneznik_vrnjacka_banja.jpg",
+                  image: "/images/izvor_sneznik_vrnjacka_banja.jpg",
                   title: "Izvor Snežnik",
                   description: "Jedan od najstarijih izvora mineralne vode u Vrnjačkoj Banji, Snežnik je poznat po svojoj lekovitoj vodi koja pomaže kod problema sa varenjem i metabolizmom."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/aqua-park-raj.jpg",
+                  image: "/images/aqua-park-raj.jpg",
                   title: "Aqua park",
                   description: "Moderan vodeni kompleks sa brojnim bazenima i toboganima, idealan za porodičnu zabavu i osveženje tokom toplih letnjih dana."
                 }

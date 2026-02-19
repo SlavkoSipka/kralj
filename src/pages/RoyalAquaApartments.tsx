@@ -50,7 +50,7 @@ const RoyalAquaApartments = () => {
       <div 
         className="fixed inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url("http://aislike.rs/Kralj1/Rudjinci A2.jpg")`,
+          backgroundImage: `url("/images/Rudjinci A2.jpg")`,
           transform: `scale(${calculateScale()})`,
           filter: 'brightness(0.65)',
           transition: 'transform 0.5s ease-out'

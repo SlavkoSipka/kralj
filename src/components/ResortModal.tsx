@@ -45,7 +45,7 @@ const ResortModal: React.FC<ResortModalProps> = ({ isOpen, onClose }) => {
           {/* Image Section */}
           <div className="relative h-[40vh] md:h-auto overflow-hidden">
             <img 
-              src="http://aislike.rs/Kralj1/Kralj 1.png"
+              src="/images/Kralj 1.png"
               alt="Kralj Residence Resort"
               className="w-full h-full object-cover"
             />

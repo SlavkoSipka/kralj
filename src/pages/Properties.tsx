@@ -67,7 +67,7 @@ const Properties = () => {
       id: 1,
       group: "resort",
       name: "Kralj Residence - Vila I",
-      image: "http://aislike.rs/Kralj1/A12.png",
+      image: "/images/A12.png",
       size: "1200m²",
       apartments: 23,
       features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"]
@@ -76,7 +76,7 @@ const Properties = () => {
       id: 2,
       group: "resort",
       name: "Kralj Residence - Vila II",
-      image: "http://aislike.rs/Kralj1/A13.png",
+      image: "/images/A13.png",
       size: "1200m²",
       apartments: 23,
       features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"]
@@ -85,7 +85,7 @@ const Properties = () => {
       id: 3,
       group: "resort",
       name: "Kralj Residence - Vila III",
-      image: "http://aislike.rs/Kralj1/A11.png",
+      image: "/images/A11.png",
       size: "1500m²",
       apartments: 27,
       features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"]
@@ -94,7 +94,7 @@ const Properties = () => {
       id: 4,
       group: "resort",
       name: "Kralj Residence - Vila IV",
-      image: "http://aislike.rs/Kralj1/A15.png",
+      image: "/images/A15.png",
       size: "1500m²",
       apartments: 27,
       features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"]
@@ -115,7 +115,7 @@ const Properties = () => {
       <div 
         className="fixed inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url("http://aislike.rs/Kralj1/Rudjinci A1.jpg")`,
+          backgroundImage: `url("/images/Rudjinci A1.jpg")`,
           transform: `scale(${calculateScale()})`,
           filter: 'brightness(0.65)',
           transition: 'transform 0.5s ease-out'
@@ -360,7 +360,7 @@ const Properties = () => {
                         {/* Image */}
                         <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-t-xl relative">
                           <img 
-                            src="http://aislike.rs/Kralj1/Rudjinci A2.jpg"
+                            src="/images/Rudjinci A2.jpg"
                             alt="Kralj Residence Royal Aqua"
                             className="w-full h-full object-cover transform transition-all duration-1000 ease-out group-hover:scale-110"
                           />
@@ -422,7 +422,7 @@ const Properties = () => {
             <div 
               className="absolute inset-0 bg-cover bg-center bg-fixed"
               style={{
-                backgroundImage: 'url("http://aislike.rs/Kralj1/Kralj 1.png")',
+                backgroundImage: 'url("/images/Kralj 1.png")',
                 filter: 'brightness(0.65)',
                 backgroundAttachment: 'fixed'
               }}

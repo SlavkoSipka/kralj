@@ -2,9 +2,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 
 const LOADING_DURATION = 1500; // Increased from 800ms to 1500ms
 const BACKGROUND_IMAGES = [
-  "http://aislike.rs/Kralj1/Rudjinci A2.jpg",
-  "http://aislike.rs/Kralj1/A15.png",
-  "http://aislike.rs/Kralj1/A9.png",
+  "/images/Rudjinci A2.jpg",
+  "/images/A15.png",
+  "/images/A9.png",
 ];
 
 const LoadingScreen = ({ onLoadingComplete }: { onLoadingComplete?: () => void }) => {
@@ -73,7 +73,7 @@ const LoadingScreen = ({ onLoadingComplete }: { onLoadingComplete?: () => void }
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black transition-opacity duration-700">
       <div className="relative">
         <img 
-          src="http://aislike.rs/Kralj1/Beli logo2.png"
+          src="/images/Beli logo2.png"
           alt="Kralj Residence Logo"
           className="h-32 animate-pulse" style={{ animationDuration: '1000ms' }}
           loading="eager" 

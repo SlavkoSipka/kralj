@@ -56,7 +56,7 @@ const Footer = () => {
           {/* Logo and Description */}
           <div className="md:col-span-2">
             <img 
-              src="http://aislike.rs/Kralj1/Beli logo2.png"
+              src="/images/Beli logo2.png"
               alt="Kralj Residence Logo"
               className="h-16 mb-6"
             />

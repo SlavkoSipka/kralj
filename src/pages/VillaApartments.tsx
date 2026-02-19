@@ -56,7 +56,7 @@ const VillaApartments = () => {
       <div 
         className="fixed inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url("http://aislike.rs/Kralj1/vila3/Kralj k4 (1).png")`,
+          backgroundImage: `url("/images/vila3/Kralj k4 (1).png")`,
           transform: `scale(${calculateScale()})`,
           filter: 'brightness(0.65)',
           transition: 'transform 0.5s ease-out'
@@ -169,17 +169,17 @@ const VillaApartments = () => {
               selectedApartment.type
             }` : '',
             image: selectedApartment?.number === 22 ?
-              "http://aislike.rs/Kralj1/vila3/stan 22.png" :
+              "/images/vila3/stan 22.png" :
               selectedApartment?.number === 23 ?
-              "http://aislike.rs/Kralj1/vila3/stan 23.png" :
+              "/images/vila3/stan 23.png" :
               selectedApartment?.number === 24 ?
-              "http://aislike.rs/Kralj1/vila3/stan 24.png" :
+              "/images/vila3/stan 24.png" :
               selectedApartment?.number === 25 ?
-              "http://aislike.rs/Kralj1/vila3/stan 25.png" :
+              "/images/vila3/stan 25.png" :
               selectedApartment?.number === 26 ?
-              "http://aislike.rs/Kralj1/vila3/stan 26.png" :
+              "/images/vila3/stan 26.png" :
               selectedApartment?.number === 27 ?
-              "http://aislike.rs/Kralj1/vila3/stan 27.png" :
+              "/images/vila3/stan 27.png" :
               selectedApartment?.image || apartment.image,
             size: selectedApartment?.size || apartment.size,
             floor: selectedApartment ? getFloorName(selectedApartment.number) : apartment.floor,
@@ -311,17 +311,17 @@ const VillaApartments = () => {
               selectedApartment.type
             }` : '',
             image: selectedApartment?.number === 22 ?
-              "http://aislike.rs/Kralj1/vila3/stan 22.png" :
+              "/images/vila3/stan 22.png" :
               selectedApartment?.number === 23 ?
-              "http://aislike.rs/Kralj1/vila3/stan 23.png" :
+              "/images/vila3/stan 23.png" :
               selectedApartment?.number === 24 ?
-              "http://aislike.rs/Kralj1/vila3/stan 24.png" :
+              "/images/vila3/stan 24.png" :
               selectedApartment?.number === 25 ?
-              "http://aislike.rs/Kralj1/vila3/stan 25.png" :
+              "/images/vila3/stan 25.png" :
               selectedApartment?.number === 26 ?
-              "http://aislike.rs/Kralj1/vila3/stan 26.png" :
+              "/images/vila3/stan 26.png" :
               selectedApartment?.number === 27 ?
-              "http://aislike.rs/Kralj1/vila3/stan 27.png" :
+              "/images/vila3/stan 27.png" :
               selectedApartment?.image || apartment.image,
             size: selectedApartment?.size || apartment.size,
             floor: selectedApartment ? getFloorName(selectedApartment.number) : apartment.floor,

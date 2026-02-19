@@ -57,86 +57,86 @@ const ApartmentCard: React.FC<ApartmentCardProps> = ({ apartment, floorName, onS
           src={
             window.location.pathname === '/royal-aqua' ? (
               apartment.number === 1 ?
-              "http://aislike.rs/Kralj1/royal/stan 1.png" :
+              "/images/royal/stan 1.png" :
               apartment.number === 2 ?
-              "http://aislike.rs/Kralj1/royal/stan 2.png" :
+              "/images/royal/stan 2.png" :
               apartment.number === 3 ?
-              "http://aislike.rs/Kralj1/royal/stan 3.png" :
+              "/images/royal/stan 3.png" :
               apartment.number === 4 ?
-              "http://aislike.rs/Kralj1/royal/stan 4.png" :
+              "/images/royal/stan 4.png" :
               apartment.number === 5 ?
-              "http://aislike.rs/Kralj1/royal/stan 5.png" :
+              "/images/royal/stan 5.png" :
               apartment.number === 6 ?
-              "http://aislike.rs/Kralj1/royal/stan 6.png" :
+              "/images/royal/stan 6.png" :
               apartment.number === 7 ?
-              "http://aislike.rs/Kralj1/royal/stan 7.png" :
+              "/images/royal/stan 7.png" :
               apartment.number === 8 ?
-              "http://aislike.rs/Kralj1/royal/stan 8.png" :
+              "/images/royal/stan 8.png" :
               apartment.number === 9 ?
-              "http://aislike.rs/Kralj1/royal/stan 9.png" :
+              "/images/royal/stan 9.png" :
               apartment.number === 10 ?
-              "http://aislike.rs/Kralj1/royal/stan 10.png" :
+              "/images/royal/stan 10.png" :
               apartment.number === 11 ?
-              "http://aislike.rs/Kralj1/royal/stan 11.png" :
+              "/images/royal/stan 11.png" :
               apartment.number === 12 ?
-              "http://aislike.rs/Kralj1/royal/stan 5.png" :
+              "/images/royal/stan 5.png" :
               apartment.number === 13 ?
-              "http://aislike.rs/Kralj1/royal/stan 6.png" :
+              "/images/royal/stan 6.png" :
               apartment.number === 14 ?
-              "http://aislike.rs/Kralj1/royal/stan 7.png" :
+              "/images/royal/stan 7.png" :
               apartment.number === 15 ?
-              "http://aislike.rs/Kralj1/royal/stan 8.png" :
+              "/images/royal/stan 8.png" :
               apartment.number === 16 ?
-              "http://aislike.rs/Kralj1/royal/stan 9.png" :
+              "/images/royal/stan 9.png" :
               apartment.number === 17 ?
-              "http://aislike.rs/Kralj1/royal/stan 10.png" :
+              "/images/royal/stan 10.png" :
               apartment.number === 18 ?
-              "http://aislike.rs/Kralj1/royal/stan 11.png" :
+              "/images/royal/stan 11.png" :
               apartment.number === 19 ?
-              "http://aislike.rs/Kralj1/royal/stan 5.png" :
+              "/images/royal/stan 5.png" :
               apartment.number === 20 ?
-              "http://aislike.rs/Kralj1/royal/stan 6.png" :
+              "/images/royal/stan 6.png" :
               apartment.number === 21 ?
-              "http://aislike.rs/Kralj1/royal/stan 7.png" :
+              "/images/royal/stan 7.png" :
               apartment.number === 22 ?
-              "http://aislike.rs/Kralj1/royal/stan 8.png" :
+              "/images/royal/stan 8.png" :
               apartment.number === 23 ?
-              "http://aislike.rs/Kralj1/royal/stan 9.png" :
+              "/images/royal/stan 9.png" :
               apartment.number === 24 ?
-              "http://aislike.rs/Kralj1/royal/stan 10.png" :
+              "/images/royal/stan 10.png" :
               apartment.number === 25 ?
-              "http://aislike.rs/Kralj1/royal/stan 11.png" :
+              "/images/royal/stan 11.png" :
               apartment.number === 26 ?
-              "http://aislike.rs/Kralj1/royal/stan 26.png" :
-              "http://aislike.rs/Kralj1/royal/stan 27.png"
+              "/images/royal/stan 26.png" :
+              "/images/royal/stan 27.png"
             ) : window.location.pathname === '/villa-3' ? (
               apartment.number === 3 || apartment.number === 6 || apartment.number === 12 || apartment.number === 18 || apartment.number === 24 ?
-              "http://aislike.rs/Kralj1/vila3/3d dvosoban.png" :
+              "/images/vila3/3d dvosoban.png" :
               apartment.number === 2 || apartment.number === 5 || apartment.number === 11 || apartment.number === 17 ?
-              "http://aislike.rs/Kralj1/vila3/basic3d.png" :
+              "/images/vila3/basic3d.png" :
               apartment.number === 1 || apartment.number === 4 || apartment.number === 10 || apartment.number === 16 || apartment.number === 22 ?
-              "http://aislike.rs/Kralj1/vila3/lift3d.png" :
+              "/images/vila3/lift3d.png" :
               apartment.number === 7 || apartment.number === 13 || apartment.number === 19 ?
-              "http://aislike.rs/Kralj1/vila3/basic3d.png" :
+              "/images/vila3/basic3d.png" :
               apartment.number === 8 || apartment.number === 14 || apartment.number === 20 ?
-              "http://aislike.rs/Kralj1/vila3/basic3d.png" :
+              "/images/vila3/basic3d.png" :
               apartment.number === 9 || apartment.number === 15 || apartment.number === 21 || apartment.number === 27 ?
-              "http://aislike.rs/Kralj1/vila3/3d garsonjera.png" :
-              "http://aislike.rs/Kralj1/vila3/basic3d.png"
+              "/images/vila3/3d garsonjera.png" :
+              "/images/vila3/basic3d.png"
             ) : (
               apartment.number === 1 || apartment.number === 7 || apartment.number === 13 || apartment.number === 19 || apartment.number === 25 ?
-              "http://aislike.rs/Kralj1/vila3/kosa3d.png" :
+              "/images/vila3/kosa3d.png" :
               apartment.number === 2 || apartment.number === 8 || apartment.number === 14 || apartment.number === 20 ?
-              "http://aislike.rs/Kralj1/vila3/basic3d.png" :
+              "/images/vila3/basic3d.png" :
               apartment.number === 3 || apartment.number === 9 || apartment.number === 15 || apartment.number === 21 ?
-              "http://aislike.rs/Kralj1/vila3/basic3d.png" :
+              "/images/vila3/basic3d.png" :
               apartment.number === 4 || apartment.number === 10 || apartment.number === 16 || apartment.number === 22 ?
-              "http://aislike.rs/Kralj1/vila3/3d garsonjera.png" :
+              "/images/vila3/3d garsonjera.png" :
               apartment.number === 5 || apartment.number === 11 || apartment.number === 17 || apartment.number === 23 ?
-              "http://aislike.rs/Kralj1/vila3/basic3d.png" :
+              "/images/vila3/basic3d.png" :
               apartment.number === 6 || apartment.number === 12 || apartment.number === 18 || apartment.number === 24 ?
-              "http://aislike.rs/Kralj1/vila3/basic3d.png" :
-              "http://aislike.rs/Kralj1/vila3/basic3d.png"
+              "/images/vila3/basic3d.png" :
+              "/images/vila3/basic3d.png"
             )
           }
           alt={`Kralj Residence - Luksuzni ${apartment.type} stan broj ${apartment.number} u Vrnjačkoj Banji`}

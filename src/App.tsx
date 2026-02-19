@@ -20,9 +20,9 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const BACKGROUND_IMAGES = [
-  "http://aislike.rs/Kralj1/Rudjinci A2.jpg",
-  "http://aislike.rs/Kralj1/A15.png",
-  "http://aislike.rs/Kralj1/A9.png",
+  "/images/Rudjinci A2.jpg",
+  "/images/A15.png",
+  "/images/A9.png",
 ] as const;
 
 const SLIDE_INTERVAL = 12000; // Increased from 5s to 12s
@@ -236,7 +236,7 @@ function App() {
                         id: 1,
                         group: "resort",
                         name: "Kralj Residence - Vila I",
-                        image: "http://aislike.rs/Kralj1/A12.png",
+                        image: "/images/A12.png",
                         size: "1200m²",
                         apartments: 23,
                         features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"],
@@ -246,7 +246,7 @@ function App() {
                         id: 2,
                         group: "resort",
                         name: "Kralj Residence - Vila II",
-                        image: "http://aislike.rs/Kralj1/A13.png",
+                        image: "/images/A13.png",
                         size: "1200m²",
                         apartments: 23,
                         features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"],
@@ -256,7 +256,7 @@ function App() {
                         id: 3,
                         group: "resort",
                         name: "Kralj Residence - Vila III",
-                        image: "http://aislike.rs/Kralj1/A11.png",
+                        image: "/images/A11.png",
                         size: "1500m²",
                         apartments: 27,
                         features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"],
@@ -266,7 +266,7 @@ function App() {
                         id: 4,
                         group: "resort",
                         name: "Kralj Residence - Vila IV",
-                        image: "http://aislike.rs/Kralj1/A15.png",
+                        image: "/images/A15.png",
                         size: "1500m²",
                         apartments: 27,
                         features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"],
@@ -382,7 +382,7 @@ function App() {
                       {/* Image */}
                       <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-t-xl relative">
                         <img 
-                          src="http://aislike.rs/Kralj1/Rudjinci A2.jpg"
+                          src="/images/Rudjinci A2.jpg"
                           alt="Kralj Residence Royal Aqua"
                           className="w-full h-full object-cover transform transition-all duration-1000 ease-out group-hover:scale-110"
                         />
@@ -484,7 +484,7 @@ function App() {
             <div className="lg:col-span-7 lg:col-start-1 relative group transform transition-transform duration-700 hover:scale-105 scroll-animate from-left delay-400">
               <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-2xl">
                 <img 
-                  src="http://aislike.rs/Kralj1/hotel kralj slika.jpg"
+                  src="/images/hotel kralj slika.jpg"
                   alt="Kralj Residence Bazen"
                   className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
                   loading="lazy"
@@ -548,7 +548,7 @@ function App() {
                 <div className="lg:col-span-7 lg:col-start-6 relative group transform transition-transform duration-700 hover:scale-105 scroll-animate from-right delay-400 order-1 lg:order-none">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-2xl">
                     <img 
-                      src="http://aislike.rs/Kralj1/A10.png"
+                      src="/images/A10.png"
                       alt="Kralj Residence Eksterijer"
                       className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
                       loading="lazy"
@@ -603,7 +603,7 @@ function App() {
                 <div className="relative group transform transition-transform duration-700 hover:scale-105 scroll-animate from-right delay-400">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-2xl">
                     <img 
-                      src="http://aislike.rs/Kralj1/Kralj.jpg"
+                      src="/images/Kralj.jpg"
                       alt="Kralj Residence Enterijer"
                       className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
                       loading="lazy"
@@ -662,7 +662,7 @@ function App() {
           <div 
             className="absolute inset-0 bg-cover bg-center hidden md:block"
             style={{
-              backgroundImage: 'url("http://aislike.rs/Kralj1/Stan 17 S1.png")',
+              backgroundImage: 'url("/images/Stan 17 S1.png")',
               filter: 'brightness(0.7)',
               backgroundAttachment: 'fixed'
             }}
@@ -670,7 +670,7 @@ function App() {
           <div 
             className="absolute inset-0 bg-cover bg-center md:hidden"
             style={{
-              backgroundImage: 'url("http://aislike.rs/Kralj1/Stan 17 S1.png")',
+              backgroundImage: 'url("/images/Stan 17 S1.png")',
               filter: 'brightness(0.7)'
             }}
           />
@@ -762,37 +762,37 @@ function App() {
             >
               {[
                 {
-                  image: "http://aislike.rs/Kralj1/zamak kulture.jpg",
+                  image: "/images/zamak kulture.jpg",
                   title: "Zamak Belimarković",
                   description: "Zamak Belimarković, poznat i kao Dvorac kulture, predstavlja jedan od najznačajnijih kulturno-istorijskih spomenika Vrnjačke Banje. Izgrađen je 1888. godine u stilu italijanske renesanse."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/most ljubavi.jpg",
+                  image: "/images/most ljubavi.jpg",
                   title: "Most Ljubavi",
                   description: "Most ljubavi je jedan od najromantičnijih simbola Vrnjačke Banje. Prema legendi, parovi koji zaključaju katanac na mostu i bace ključ u reku, zauvek će ostati zajedno."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/banjski park.jpg",
+                  image: "/images/banjski park.jpg",
                   title: "Banjski park",
                   description: "Vrnjački park je živopisan prostor za druženje i zabavu koji objedinjuje prirodu, kulturu i istoriju, pružajući posetiocima mir i opuštanje među starim lipama i skulpturama."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/promenada.jpg",
+                  image: "/images/promenada.jpg",
                   title: "Promenada",
                   description: "Dugačka preko 2 km, predstavlja centralno mesto svih susreta u Vrnjačkoj Banji i obiluje udobnim mestima za predah na klupi ili osveženje u kafiću."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/japanski vrt.jpg",
+                  image: "/images/japanski vrt.jpg",
                   title: "Japanski vrt",
                   description: "Japanski vrt u Vrnjačkoj Banji predstavlja mirno utočište sa kaskadnim vodopadima, drvenim mostićem i čajnom kućicom. Pruža spokojni ambijent za odmor u prirodi."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/izvor_sneznik_vrnjacka_banja.jpg",
+                  image: "/images/izvor_sneznik_vrnjacka_banja.jpg",
                   title: "Izvor Snežnik",
                   description: "Jedan od najstarijih izvora mineralne vode u Vrnjačkoj Banji, Snežnik je poznat po svojoj lekovitoj vodi koja pomaže kod problema sa varenjem i metabolizmom."
                 },
                 {
-                  image: "http://aislike.rs/Kralj1/aqua-park-raj.jpg",
+                  image: "/images/aqua-park-raj.jpg",
                   title: "Aqua park",
                   description: "Moderan vodeni kompleks sa brojnim bazenima i toboganima, idealan za porodičnu zabavu i osveženje tokom toplih letnjih dana."
                 }

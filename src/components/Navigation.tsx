@@ -76,7 +76,7 @@ const Navigation = ({ scrolled = false }) => {
           <div className="flex-shrink-0 -ml-2">
             <Link to="/">
               <img 
-                src="http://aislike.rs/Kralj1/Beli logo2.png" 
+                src="/images/Beli logo2.png" 
                 alt="Kralj Residence Logo" 
                 className={`transition-all duration-500 transform ${scrolled ? 'h-10 md:h-14' : 'h-16 md:h-24'}`}
               />
