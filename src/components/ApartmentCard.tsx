@@ -1,5 +1,6 @@
 import React from 'react';
-import { Apartment } from '../types';
+import { useLocation } from 'react-router-dom';
+import { isApartmentSold } from '../constants/apartmentAvailability';
 
 interface ApartmentCardProps {
   apartment: {
@@ -13,6 +14,9 @@ interface ApartmentCardProps {
 }
 
 const ApartmentCard: React.FC<ApartmentCardProps> = ({ apartment, floorName, onSelect }) => {
+  const { pathname } = useLocation();
+  const sold = isApartmentSold(pathname, apartment.number);
+
   return (
     <div className="group relative overflow-hidden rounded-lg bg-[#1A1614] border border-[#D4AF37]/20 hover:border-[#D4AF37]/40 transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(212,175,55,0.15)] scroll-animate from-bottom">
       {/* Decorative corners */}
@@ -22,32 +26,11 @@ const ApartmentCard: React.FC<ApartmentCardProps> = ({ apartment, floorName, onS
       {/* Status Badge */}
       <div className="absolute top-4 left-4 z-20">
         <span className={`text-sm px-4 py-1.5 rounded-full font-medium ${
-          (window.location.pathname === '/villa-3' && [1, 3,  4, 6, 9, 10, 11, 12, 15, 16, 17, 18, 20, 21, 22, 24, 27].includes(apartment.number)) ||
-          (window.location.pathname === '/villa-3' && apartment.number === 5) ||
-          (window.location.pathname === '/villa-3' && apartment.number === 22) ||
-          (window.location.pathname === '/villa-3' && apartment.number === 25) ||
-          (window.location.pathname === '/villa-3' && apartment.number === 24) ||
-          (window.location.pathname === '/villa-3' && apartment.number === 8) ||
-          (window.location.pathname === '/villa-3' && apartment.number === 14) ||
-          (window.location.pathname === '/villa-3' && apartment.number === 23) ||
-          (window.location.pathname === '/villa-3' && apartment.number === 8) ||
-        (window.location.pathname === '/villa-3' && apartment.number === 23) ||
-        (window.location.pathname === '/villa-3' && apartment.number === 19) ||
-        (window.location.pathname === '/villa-4' && [1, 4, 8, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 25, 26, 27].includes(apartment.number)) ||
-         (window.location.pathname === '/royal-aqua' && [2, 3, 7, 8, 9, 12, 14, 15, 16, 18, 21, 22, 23, 26, 27].includes(apartment.number))
-          ? 'bg-black/80 text-[#D4AF37] border border-[#D4AF37]' 
-          : 'bg-[#D4AF37] text-black'
+          sold
+            ? 'bg-black/80 text-[#D4AF37] border border-[#D4AF37]'
+            : 'bg-[#D4AF37] text-black'
         }`}>
-          {(window.location.pathname === '/villa-3' && [1, 3, 4, 6, 9, 10, 11, 12, 15, 16, 17, 18, 20, 21, 22, 24, 27].includes(apartment.number)) ||
-           (window.location.pathname === '/villa-3' && apartment.number === 5) ||
-           (window.location.pathname === '/villa-3' && apartment.number === 22) ||
-           (window.location.pathname === '/villa-3' && apartment.number === 25) ||
-           (window.location.pathname === '/villa-3' && apartment.number === 24) ||
-           (window.location.pathname === '/villa-3' && apartment.number === 8) ||
-          (window.location.pathname === '/villa-3' && apartment.number === 19) ||
-          (window.location.pathname === '/villa-4' && [1, 4, 7, 8, 9, 11, 10, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 21, 26, 27].includes(apartment.number)) ||
-           (window.location.pathname === '/royal-aqua' && [2, 3, 7, 8, 9, 12, 14, 15, 16, 18, 21, 22, 23, 26, 27].includes(apartment.number))
-            ? 'Prodato' : 'Dostupno'}
+          {sold ? 'Prodato' : 'Dostupno'}
         </span>
       </div>
 
@@ -55,7 +38,7 @@ const ApartmentCard: React.FC<ApartmentCardProps> = ({ apartment, floorName, onS
       <div className="aspect-[4/3] overflow-hidden relative">
         <img 
           src={
-            window.location.pathname === '/royal-aqua' ? (
+            pathname === '/royal-aqua' ? (
               apartment.number === 1 ?
               "/images/royal/stan 1.png" :
               apartment.number === 2 ?
@@ -109,7 +92,7 @@ const ApartmentCard: React.FC<ApartmentCardProps> = ({ apartment, floorName, onS
               apartment.number === 26 ?
               "/images/royal/stan 26.png" :
               "/images/royal/stan 27.png"
-            ) : window.location.pathname === '/villa-3' ? (
+            ) : pathname === '/villa-3' ? (
               apartment.number === 3 || apartment.number === 6 || apartment.number === 12 || apartment.number === 18 || apartment.number === 24 ?
               "/images/vila3/3d dvosoban.png" :
               apartment.number === 2 || apartment.number === 5 || apartment.number === 11 || apartment.number === 17 ?
@@ -173,91 +156,28 @@ const ApartmentCard: React.FC<ApartmentCardProps> = ({ apartment, floorName, onS
             <p className="text-cream-100 font-medium text-base" style={{ fontFamily: 'Playfair Display' }}>{floorName}</p>
           </div>
           <div className="text-center p-3 bg-black/20 rounded-lg transform transition-all duration-300 group-hover:translate-y-[-2px] hover:bg-black/30">
-            <p className="text-[#D4AF37] font-medium text-xs mb-1">{window.location.pathname === '/royal-aqua' && [1, 2, 3, 4, 5, 6, 10, 11].includes(apartment.number) ? 'Dvorište' : 'Terasa'}</p>
+            <p className="text-[#D4AF37] font-medium text-xs mb-1">{pathname === '/royal-aqua' && [1, 2, 3, 4, 5, 6, 10, 11].includes(apartment.number) ? 'Dvorište' : 'Terasa'}</p>
             <p className="text-cream-100 font-medium text-lg" style={{ fontFamily: 'Playfair Display' }}>Da</p>
           </div>
         </div>
 
         {/* CTA Button */}
         <button 
-          onClick={!((window.location.pathname === '/villa-3' && [1, 3, 4, 6, 9, 10, 11, 12, 15, 16, 17, 18, 20, 21, 22, 24, 27].includes(apartment.number)) ||
-                    (window.location.pathname === '/villa-3' && apartment.number === 5) ||
-                    (window.location.pathname === '/villa-3' && apartment.number === 22) ||
-                    (window.location.pathname === '/villa-3' && apartment.number === 24) ||
-                   (window.location.pathname === '/villa-4' && [1, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 25, 26, 27].includes(apartment.number)) ||
-                    (window.location.pathname === '/villa-3' && [4, 27].includes(apartment.number)) ||
-                    (window.location.pathname === '/villa-3' && apartment.number === 14) ||
-                    (window.location.pathname === '/villa-3' && apartment.number === 23) ||
-                   (window.location.pathname === '/royal-aqua' && [2, 3, 7, 8, 9, 12, 14, 15, 16, 18, 21, 22, 23, 26, 27].includes(apartment.number)))
-              ? onSelect : undefined}
-          disabled={(window.location.pathname === '/villa-3' && [1, 3, 4, 6, 9, 10, 11, 12, 15, 16, 17, 18, 20, 21, 22, 24, 27].includes(apartment.number)) ||
-                   (window.location.pathname === '/villa-3' && apartment.number === 5) ||
-                   (window.location.pathname === '/villa-3' && apartment.number === 22) ||
-                    (window.location.pathname === '/villa-3' && apartment.number === 24) ||
-                   (window.location.pathname === '/villa-3' && apartment.number === 19) ||
-                   (window.location.pathname === '/villa-3' && apartment.number === 19) ||
-                   (window.location.pathname === '/villa-4' && [1, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 25, 26, 27].includes(apartment.number)) ||
-                   (window.location.pathname === '/villa-3' && apartment.number === 14) ||
-                   (window.location.pathname === '/villa-3' && apartment.number === 23) ||
-                   (window.location.pathname === '/royal-aqua' && [2, 3, 7, 8, 9, 12, 14, 15, 16, 18, 21, 22, 23, 26, 27].includes(apartment.number))}
+          onClick={!sold ? onSelect : undefined}
+          disabled={sold}
           className={`relative w-full overflow-hidden ${
-            (window.location.pathname === '/villa-3' && [1, 3, 4, 6, 9, 10, 11, 12, 15, 16, 17, 18, 20, 21, 22, 24, 27].includes(apartment.number)) ||
-            (window.location.pathname === '/villa-3' && apartment.number === 5) ||
-                   (window.location.pathname === '/villa-3' && apartment.number === 25) ||
-           (window.location.pathname === '/villa-3' && apartment.number === 8) ||
-           (window.location.pathname === '/villa-3' && apartment.number === 19) ||
-           (window.location.pathname === '/villa-4' && [1, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 25, 26, 27].includes(apartment.number)) ||
-            (window.location.pathname === '/villa-3' && apartment.number === 14) ||
-            (window.location.pathname === '/villa-3' && apartment.number === 23) ||
-            (window.location.pathname === '/villa-3' && [4, 27].includes(apartment.number)) ||
-           (window.location.pathname === '/villa-3' && apartment.number === 8) ||
-            (window.location.pathname === '/royal-aqua' && [2, 3, 7, 8, 9, 12, 14, 15, 16, 18, 21, 22, 23, 26, 27].includes(apartment.number))
-            ? 'bg-black/80 text-[#D4AF37] border border-[#D4AF37] cursor-default'
-            : 'bg-[#D4AF37] text-black hover:bg-[#E5C048]'
+            sold
+              ? 'bg-black/80 text-[#D4AF37] border border-[#D4AF37] cursor-default'
+              : 'bg-[#D4AF37] text-black hover:bg-[#E5C048]'
           } px-6 py-3 rounded-lg text-sm tracking-wider font-medium shadow-lg hover:shadow-xl transform transition-all duration-300 hover:-translate-y-0.5 group`}
         >
           <span className="relative z-10 flex items-center justify-center">
-            {(window.location.pathname === '/villa-3' && [1, 3, 4, 6, 9, 10, 11, 12, 15, 16, 17, 18, 20, 21, 22, 24, 27].includes(apartment.number)) ||
-             (window.location.pathname === '/villa-3' && apartment.number === 5) ||
-             (window.location.pathname === '/villa-3' && apartment.number === 22) ||
-              (window.location.pathname === '/villa-3' && apartment.number === 23) ||
-             (window.location.pathname === '/villa-3' && apartment.number === 23) ||
-            (window.location.pathname === '/villa-3' && apartment.number === 23) ||
-            (window.location.pathname === '/villa-3' && apartment.number === 8) ||
-            (window.location.pathname === '/villa-3' && apartment.number === 19) ||
-             (window.location.pathname === '/villa-3' && apartment.number === 14) ||
-             (window.location.pathname === '/villa-4' && [1, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 25, 26, 27].includes(apartment.number)) ||
-             (window.location.pathname === '/villa-3' && [4, 27].includes(apartment.number)) ||
-             (window.location.pathname === '/villa-3' && apartment.number === 8) ||
-             (window.location.pathname === '/royal-aqua' && [2, 3, 7, 8, 9, 12, 14, 15, 16, 18, 21, 22, 23, 26, 27].includes(apartment.number))
-              ? 'PRODATO' : 'Pogledajte stan'}
-            {!((window.location.pathname === '/villa-3' && [1, 3, 4, 6, 9, 10, 11, 12, 15, 16, 17, 18, 20, 21, 22, 24, 27].includes(apartment.number)) ||
-                (window.location.pathname === '/villa-3' && apartment.number === 5) ||
-                (window.location.pathname === '/villa-3' && apartment.number === 22) ||
-                (window.location.pathname === '/villa-3' && apartment.number === 25) ||
-                (window.location.pathname === '/villa-3' && apartment.number === 24) ||
-               (window.location.pathname === '/villa-3' && apartment.number === 19) ||
-                (window.location.pathname === '/villa-4' && [1, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 25, 26, 27].includes(apartment.number)) ||
-                (window.location.pathname === '/villa-3' && apartment.number === 14) ||
-                (window.location.pathname === '/villa-3' && apartment.number === 23) ||
-                (window.location.pathname === '/villa-3' && apartment.number === 4) ||
-               (window.location.pathname === '/villa-3' && apartment.number === 8) ||
-                (window.location.pathname === '/royal-aqua' && [2, 3, 7, 8, 9, 12, 14, 15, 16, 18, 21, 22, 23, 26, 27].includes(apartment.number))) && (
+            {sold ? 'PRODATO' : 'Pogledajte stan'}
+            {!sold && (
               <span className="ml-2 transform transition-transform duration-300 group-hover:translate-x-1">→</span>
             )}
           </span>
-          {!((window.location.pathname === '/villa-3' && [1, 2, 3, 9, 11, 12, 15, 16, 17, 18, 20, 21, 22, 24, 27].includes(apartment.number)) ||
-              (window.location.pathname === '/villa-3' && apartment.number === 5) ||
-              (window.location.pathname === '/villa-3' && apartment.number === 22) ||
-              (window.location.pathname === '/villa-3' && apartment.number === 4) ||
-              (window.location.pathname === '/villa-3' && apartment.number === 25) ||
-              (window.location.pathname === '/villa-3' && apartment.number === 24) ||
-             (window.location.pathname === '/villa-3' && apartment.number === 19) ||
-              (window.location.pathname === '/villa-4' && [1, 4, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 25, 26, 27].includes(apartment.number)) ||
-             (window.location.pathname === '/villa-3' && apartment.number === 8) ||
-              (window.location.pathname === '/villa-3' && apartment.number === 14) ||
-              (window.location.pathname === '/villa-3' && apartment.number === 23) ||
-              (window.location.pathname === '/royal-aqua' && [2, 3, 7, 8, 9, 12, 14, 15, 16, 18, 21, 22, 23, 26, 27].includes(apartment.number))) && (
+          {!sold && (
             <div className="absolute inset-0 bg-white transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100"></div>
           )}
         </button>

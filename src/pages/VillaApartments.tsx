@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ChevronDown, Phone, Mail, MapPin } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { ANIMATION_DELAYS, SAMPLE_APARTMENT } from '../constants';
+import { apartmentStatusForPath } from '../constants/apartmentAvailability';
 import ContactForm from '../components/ContactForm';
 import {
   GROUND_FLOOR_APARTMENTS,
@@ -156,37 +157,6 @@ const VillaApartments = () => {
           />
         </div>
 
-        {/* Modal */}
-        <ApartmentModal
-          isOpen={isOpen}
-          onClose={() => {
-            close();
-            setSelectedApartment(null);
-          }}
-          apartment={{
-            ...apartment,
-            name: selectedApartment ? `Stan Broj ${selectedApartment.number} - ${
-              selectedApartment.type
-            }` : '',
-            image: selectedApartment?.number === 22 ?
-              "/images/vila3/stan 22.png" :
-              selectedApartment?.number === 23 ?
-              "/images/vila3/stan 23.png" :
-              selectedApartment?.number === 24 ?
-              "/images/vila3/stan 24.png" :
-              selectedApartment?.number === 25 ?
-              "/images/vila3/stan 25.png" :
-              selectedApartment?.number === 26 ?
-              "/images/vila3/stan 26.png" :
-              selectedApartment?.number === 27 ?
-              "/images/vila3/stan 27.png" :
-              selectedApartment?.image || apartment.image,
-            size: selectedApartment?.size || apartment.size,
-            floor: selectedApartment ? getFloorName(selectedApartment.number) : apartment.floor,
-            status: 'Dostupno'
-          }}
-        />
-
         {/* Contact Section */}
         <div id="contact" className="relative py-32 overflow-hidden bg-[#1A1614]">
           <div className="absolute inset-0 overflow-hidden">
@@ -325,7 +295,9 @@ const VillaApartments = () => {
               selectedApartment?.image || apartment.image,
             size: selectedApartment?.size || apartment.size,
             floor: selectedApartment ? getFloorName(selectedApartment.number) : apartment.floor,
-            status: 'Dostupno'
+            status: selectedApartment
+              ? apartmentStatusForPath('/villa-3', selectedApartment.number)
+              : apartment.status
           }}
         />
         

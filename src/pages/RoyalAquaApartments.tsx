@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, Phone, Mail, MapPin } from 'lucide-react';
 import { ANIMATION_DELAYS, SAMPLE_APARTMENT } from '../constants';
+import { apartmentStatusForPath } from '../constants/apartmentAvailability';
 import ContactForm from '../components/ContactForm';
 import {
   ROYAL_AQUA_GROUND_FLOOR_APARTMENTS,
@@ -263,7 +264,9 @@ const RoyalAquaApartments = () => {
             size: selectedApartment?.size || apartment.size,
             number: selectedApartment?.number || 0,
             floor: selectedApartment ? getFloorName(selectedApartment.number) : apartment.floor,
-            status: 'Dostupno'
+            status: selectedApartment
+              ? apartmentStatusForPath('/royal-aqua', selectedApartment.number)
+              : apartment.status
           }}
         />
         
