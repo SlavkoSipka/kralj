@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -12,6 +12,13 @@ import Villa4Apartments from './pages/Villa4Apartments.tsx';
 import RoyalAquaApartments from './pages/RoyalAquaApartments.tsx';
 import CaseStudy from './pages/CaseStudy.tsx';
 import './index.css';
+
+/** Preusmerava /en/... na istu rutu bez prefiksa (klijentski fallback ako server ipak servira index.html). */
+function EnPrefixRedirect() {
+  const { '*': rest } = useParams();
+  const target = rest ? `/${rest}` : '/';
+  return <Navigate to={target} replace />;
+}
 
 // Google Analytics page tracking
 function RouteTracker() {
@@ -40,6 +47,9 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/villa-4" element={<Villa4Apartments />} />
           <Route path="/royal-aqua" element={<RoyalAquaApartments />} />
           <Route path="/o-projektu" element={<CaseStudy />} />
+          <Route path="/en" element={<Navigate to="/" replace />} />
+          <Route path="/en/*" element={<EnPrefixRedirect />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </LanguageProvider>
