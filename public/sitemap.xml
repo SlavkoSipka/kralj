@@ -9,7 +9,6 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en" />
     <image:image>
       <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739186475/A12_m1iz64.png</image:loc>
       <image:title>Kralj Residence Vrnjačka Banja - Gradnja i prodaja luksuznih stanova</image:title>
@@ -24,7 +23,6 @@
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/properties" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/properties" />
     <image:image>
       <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739578562/Kralj_k4_1_cwgmyh.png</image:loc>
       <image:title>Stanovi za prodaju Vrnjačka Banja - Kralj Residence</image:title>
@@ -39,7 +37,6 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/location" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/location" />
     <image:image>
       <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739369610/HOTEL_KRALJ_1_2_phap0b.png</image:loc>
       <image:title>Lokacija Kralj Residence Vrnjačka Banja</image:title>
@@ -54,7 +51,6 @@
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/villa-3" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/villa-3" />
     <image:image>
       <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739186470/A11_kc6iet.png</image:loc>
       <image:title>Vila III stanovi za prodaju - Kralj Residence Vrnjačka Banja</image:title>
@@ -69,7 +65,6 @@
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/villa-4" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/villa-4" />
     <image:image>
       <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739185443/A15_i5i4zp.png</image:loc>
       <image:title>Vila IV stanovi za prodaju - Kralj Residence Vrnjačka Banja</image:title>
@@ -84,7 +79,6 @@
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
     <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/royal-aqua" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/royal-aqua" />
     <image:image>
       <image:loc>https://res.cloudinary.com/duvwf75cx/image/upload/v1739186475/A12_m1iz64.png</image:loc>
       <image:title>Royal Aqua apartmani za prodaju - Kralj Residence Vrnjačka Banja</image:title>
@@ -99,6 +93,5 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/o-projektu" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://kraljresidence.rs/en/o-projektu" />
   </url>
 </urlset>
