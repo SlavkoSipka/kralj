@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { StrictMode, lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Routes, Route, Navigate, useParams } from 'react-router-dom';
 import { LanguageProvider } from './contexts/LanguageContext';
@@ -11,7 +11,13 @@ import VillaApartments from './pages/VillaApartments.tsx';
 import Villa4Apartments from './pages/Villa4Apartments.tsx';
 import RoyalAquaApartments from './pages/RoyalAquaApartments.tsx';
 import CaseStudy from './pages/CaseStudy.tsx';
+import BuildingPage from './pages/BuildingPage.tsx';
+import { initTheme } from './lib/theme';
 import './index.css';
+
+initTheme();
+
+const Admin = lazy(() => import('./pages/admin/Admin.tsx'));
 
 /** Preusmerava /en/... na istu rutu bez prefiksa (klijentski fallback ako server ipak servira index.html). */
 function EnPrefixRedirect() {
@@ -43,9 +49,18 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/" element={<App />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/location" element={<Location />} />
-          <Route path="/villa-3" element={<VillaApartments />} />
-          <Route path="/villa-4" element={<Villa4Apartments />} />
-          <Route path="/royal-aqua" element={<RoyalAquaApartments />} />
+          <Route path="/villa-3" element={<BuildingPage slug="villa-3" fallback={<VillaApartments />} />} />
+          <Route path="/villa-4" element={<BuildingPage slug="villa-4" fallback={<Villa4Apartments />} />} />
+          <Route path="/royal-aqua" element={<BuildingPage slug="royal-aqua" fallback={<RoyalAquaApartments />} />} />
+          <Route path="/zgrada/:slug" element={<BuildingPage />} />
+          <Route
+            path="/admin"
+            element={
+              <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-royal-charcoal"><div className="h-10 w-10 animate-spin rounded-full border-2 border-gold border-t-transparent" /></div>}>
+                <Admin />
+              </Suspense>
+            }
+          />
           <Route path="/o-projektu" element={<CaseStudy />} />
           <Route path="/en" element={<Navigate to="/" replace />} />
           <Route path="/en/*" element={<EnPrefixRedirect />} />

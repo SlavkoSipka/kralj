@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Facebook, Instagram, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, MapPin, Lock } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const Footer = () => {
@@ -46,124 +46,119 @@ const Footer = () => {
     navigateAndScroll(sectionId);
   };
 
-  return (
-    <footer className="bg-black relative">
-      {/* Decorative top border */}
-      <div className="h-px bg-gradient-to-r from-transparent via-[#D4AF37]/30 to-transparent"></div>
+  const year = new Date().getFullYear();
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid md:grid-cols-4 gap-12">
-          {/* Logo and Description */}
-          <div className="md:col-span-2">
-            <img 
-              src="/images/Beli logo2.png"
-              alt="Kralj Residence Logo"
-              className="h-16 mb-6"
-            />
-            <p className="text-cream-100/80 leading-relaxed mb-8 max-w-md">
-              {t('footer.description')}
+  return (
+    <footer className="relative bg-night text-cream-100">
+      <div className="h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+
+      <div className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
+        <div className="grid gap-12 md:grid-cols-12">
+          {/* Brand */}
+          <div className="md:col-span-5">
+            <img src="/images/Beli logo2.webp" alt="Kralj Residence" className="mb-6 h-14" />
+            <p className="max-w-md text-ts-p leading-relaxed text-cream-100/70">
+              Kralj Residence je porodična firma porodice Zekanović. Već decenijama gradimo i prodajemo
+              luksuzne stanove i vile u Vrnjačkoj Banji, uz direktnu prodaju od investitora.
             </p>
-            <div className="flex space-x-4">
-              <a href="https://www.facebook.com/kraljresidence" target="_blank" rel="noopener noreferrer" className="text-[#D4AF37] hover:text-white transition-colors">
-                <Facebook className="w-5 h-5" />
+            <div className="mt-8 flex gap-3">
+              <a href="https://www.facebook.com/kraljresidence" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="social-btn">
+                <Facebook className="h-4 w-4" />
               </a>
-              <a href="https://www.instagram.com/kralj_residence?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" className="text-[#D4AF37] hover:text-white transition-colors">
-                <Instagram className="w-5 h-5" />
+              <a href="https://www.instagram.com/kralj_residence?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="social-btn">
+                <Instagram className="h-4 w-4" />
               </a>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="text-[#D4AF37] text-lg mb-6">{t('footer.quickLinks')}</h3>
-            <ul className="space-y-4">
+          {/* Navigation */}
+          <div className="md:col-span-3">
+            <h3 className="footer-heading">Navigacija</h3>
+            <ul className="space-y-3.5">
               <li>
-                <Link 
-                  to="/" 
-                  onClick={() => {
-                    if (location.pathname === '/') {
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }
-                  }}
-                  className="text-cream-100/80 hover:text-[#D4AF37] transition-colors"
+                <Link
+                  to="/"
+                  onClick={() => location.pathname === '/' && window.scrollTo({ top: 0, behavior: 'smooth' })}
+                  className="footer-link"
                 >
                   {t('nav.home')}
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/properties" 
-                  onClick={() => window.scrollTo(0, 0)}
-                  className="text-cream-100/80 hover:text-[#D4AF37] transition-colors"
-                >
+                <Link to="/properties" onClick={() => window.scrollTo(0, 0)} className="footer-link">
                   {t('nav.properties')}
                 </Link>
               </li>
               <li>
-                <button
-                  onClick={() => navigateAndScroll('about')}
-                  className="text-cream-100/80 hover:text-[#D4AF37] transition-colors"
-                >
+                <Link to="/location" onClick={() => window.scrollTo(0, 0)} className="footer-link">
+                  {t('nav.location')}
+                </Link>
+              </li>
+              <li>
+                <button onClick={() => scrollToSection('about')} className="footer-link">
                   {t('nav.about')}
                 </button>
               </li>
               <li>
-                <button
-                  onClick={() => navigateAndScroll('contact')}
-                  className="text-cream-100/80 hover:text-[#D4AF37] transition-colors"
-                >
+                <button onClick={() => scrollToSection('contact')} className="footer-link">
                   {t('nav.contact')}
                 </button>
               </li>
             </ul>
           </div>
 
-          {/* Contact Info */}
-          <div>
-            <h3 className="text-[#D4AF37] text-lg mb-6">{t('footer.contact')}</h3>
+          {/* Contact */}
+          <div className="md:col-span-4">
+            <h3 className="footer-heading">Kontakt</h3>
             <ul className="space-y-4">
               <li>
-                <a href="tel:+381606112327" className="text-cream-100/80 hover:text-[#D4AF37] transition-colors flex items-center">
-                  <Phone className="w-4 h-4 mr-2" />
-                  +381 60 611 2327
+                <a href="tel:+381606112327" className="footer-link flex items-center gap-3">
+                  <Phone className="h-4 w-4 text-gold" />
+                  <span className="font-sans tabular-nums">+381 60 611 2327</span>
                 </a>
               </li>
               <li>
-                <a href="mailto:office@kraljresidence.rs" className="text-cream-100/80 hover:text-[#D4AF37] transition-colors flex items-center">
-                  <Mail className="w-4 h-4 mr-2" />
+                <a href="tel:+381606112328" className="footer-link flex items-center gap-3">
+                  <Phone className="h-4 w-4 text-gold" />
+                  <span className="font-sans tabular-nums">+381 60 611 2328</span>
+                </a>
+              </li>
+              <li>
+                <a href="mailto:office@kraljresidence.rs" className="footer-link flex items-center gap-3">
+                  <Mail className="h-4 w-4 text-gold" />
                   office@kraljresidence.rs
                 </a>
               </li>
-              <li>
-                <div className="text-cream-100/80 flex items-center">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  Vrnjačka Banja, Srbija
-                </div>
+              <li className="flex items-start gap-3 text-cream-100/70">
+                <MapPin className="mt-1 h-4 w-4 flex-shrink-0 text-gold" />
+                Kneza Miloša 6, Vrnjačka Banja, Srbija
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom Bar */}
-        <div className="mt-16 pt-8 border-t border-white/10">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-cream-100/60 text-sm mb-4 md:mb-0">
-              {t('footer.rights')}
-            </p>
-            <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-6">
-              <p className="text-cream-100/60 text-sm">
-                Website by <a href="https://aisajt.com" className="text-[#D4AF37] hover:text-white transition-colors">
-                  AiSajt
-                </a>
-              </p>
-              <Link 
-                to="/o-projektu" 
-                onClick={() => window.scrollTo(0, 0)}
-                className="text-cream-100/60 hover:text-[#D4AF37] text-sm transition-colors"
-              >
-                O projektu
-              </Link>
-            </div>
+        {/* Bottom bar */}
+        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-8 md:flex-row">
+          <p className="text-sm text-cream-100/50">
+            © {year} Kralj Residence. Sva prava zadržana.
+          </p>
+          <div className="flex items-center gap-6 text-sm">
+            <Link to="/o-projektu" onClick={() => window.scrollTo(0, 0)} className="footer-link">
+              O projektu
+            </Link>
+            <Link
+              to="/admin"
+              className="inline-flex items-center gap-1.5 text-cream-100/40 transition-colors hover:text-gold"
+            >
+              <Lock className="h-3 w-3" />
+              Admin
+            </Link>
+            <span className="text-cream-100/50">
+              Izrada sajta:{' '}
+              <a href="https://aisajt.com" className="text-gold transition-colors hover:text-gold-soft">
+                AiSajt
+              </a>
+            </span>
           </div>
         </div>
       </div>

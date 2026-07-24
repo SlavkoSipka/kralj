@@ -1,9 +1,9 @@
 import { STATUS } from './index';
 
 /** Brojevi stanova koji su još uvek dostupni (ostali su prodati) — usklađeno sa klijentovim tabelama. */
-const VILLA3_AVAILABLE = new Set([2, 7]);
-const VILLA4_AVAILABLE = new Set([3, 5, 6, 22, 23]);
-const ROYAL_AQUA_AVAILABLE = new Set([1, 4, 6, 10, 13, 17, 19, 20, 24, 25]);
+const VILLA3_AVAILABLE = new Set<number>([]);
+const VILLA4_AVAILABLE = new Set([3, 4, 5, 23]);
+const ROYAL_AQUA_AVAILABLE = new Set([17, 19, 20, 24, 25]);
 
 export function isApartmentSold(pathname: string, apartmentNumber: number): boolean {
   if (pathname === '/villa-3') {

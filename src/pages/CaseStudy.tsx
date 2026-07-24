@@ -5,6 +5,7 @@ import LoadingScreen from '../components/LoadingScreen';
 import { useScroll } from '../hooks/useScroll';
 import { useParallax } from '../hooks/useParallax';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
+import { useSeo } from '../hooks/useSeo';
 
 const CaseStudy = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -12,6 +13,12 @@ const CaseStudy = () => {
   const { scrolled, scrollPosition } = useScroll();
   const { calculateScale } = useParallax(scrollPosition);
   useIntersectionObserver();
+  useSeo({
+    title: 'O projektu Kralj Residence | Novogradnja u Vrnjačkoj Banji',
+    description:
+      'Priča o Kralj Residence – porodičnoj firmi koja gradi i prodaje luksuzne stanove u Vrnjačkoj Banji. Novogradnja i direktna prodaja od investitora.',
+    path: '/o-projektu',
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -19,22 +26,6 @@ const CaseStudy = () => {
     }, 1800);
 
     return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    // Update document title and meta tags
-    document.title = 'O Projektu | Kralj Residence Vrnjačka Banja';
-    
-    // Update canonical
-    const canonical = document.querySelector('link[rel="canonical"]');
-    if (canonical) {
-      canonical.setAttribute('href', 'https://kraljresidence.rs/o-projektu');
-    } else {
-      const link = document.createElement('link');
-      link.rel = 'canonical';
-      link.href = 'https://kraljresidence.rs/o-projektu';
-      document.head.appendChild(link);
-    }
   }, []);
 
   return (

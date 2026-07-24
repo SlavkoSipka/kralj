@@ -1,16 +1,48 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* ============ TEME (samo boje) ============
+     Svetla tema (default) — RGB tripleti zbog Tailwind opacity modifiera */
+  :root {
+    --c-gold: 201 162 74;        /* #C9A24A */
+    --c-gold-deep: 143 110 34;   /* #8F6E22 — zlatni tekst na svetloj pozadini */
+    --c-gold-soft: 231 211 161;  /* #E7D3A1 */
+    --c-ink: 23 18 14;           /* #17120E — primarni tekst */
+    --c-charcoal: 33 26 20;      /* #211A14 — tamna sekcija */
+    --c-espresso: 44 35 27;      /* #2C231B — tamna kartica */
+    --c-stone: 107 97 87;        /* #6B6157 — muted tekst */
+    --c-sand: 242 233 217;       /* #F2E9D9 — alt pozadina */
+    --c-ivory: 251 248 242;      /* #FBF8F2 — glavna pozadina */
+    --c-surface: 255 255 255;    /* pozadina kartica */
+    --c-eyebrow: 143 110 34;     /* #8F6E22 */
+  }
+
+  /* Tamna tema — crna + zlatna (60% neutralno, 30% sekundarne pozadine, 10% zlatni akcenat) */
+  .theme-dark {
+    --c-gold: 201 162 74;        /* akcenat ostaje isti */
+    --c-gold-deep: 214 178 96;   /* #D6B260 — svetlije zlato za tekst na tamnom */
+    --c-gold-soft: 231 211 161;
+    --c-ink: 240 230 213;        /* #F0E6D5 — tekst postaje svetao */
+    --c-charcoal: 25 20 15;      /* #19140F — tamna sekcija (topli ton za ritam) */
+    --c-espresso: 32 26 18;      /* #201A12 — tamna kartica */
+    --c-stone: 168 156 140;      /* #A89C8C — muted tekst na tamnom */
+    --c-sand: 20 16 12;          /* #14100C — alt pozadina */
+    --c-ivory: 12 10 8;          /* #0C0A08 — glavna pozadina, skoro crna */
+    --c-surface: 24 19 14;       /* #18130E — kartice */
+    --c-eyebrow: 201 162 74;     /* zlatni eyebrow na tamnom */
+  }
+
   html {
     font-family: 'Cormorant Garamond', serif;
-    scroll-behavior: smooth !important;
+    scroll-behavior: smooth;
     scroll-padding-top: 20vh;
     overflow-x: hidden;
-    max-width: 100vw;
+    overflow-x: clip;
+    max-width: 100%;
     font-size: 14px;
     
     @media (min-width: 768px) {
@@ -20,14 +52,41 @@
   
   body {
     overflow-x: hidden;
-    max-width: 100vw;
+    overflow-x: clip;
+    max-width: 100%;
+    background-color: rgb(var(--c-ivory));
   }
 
-  /* Optimize text rendering */
   * {
-    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Typescale defaults (major third 1.25) — utilities still override */
+  h1 { font-size: 3.8147rem; line-height: 1.0; letter-spacing: -0.02em; }
+  h2 { font-size: 3.0518rem; line-height: 1.1; letter-spacing: -0.018em; }
+  h3 { font-size: 2.4414rem; line-height: 1.2; letter-spacing: -0.015em; }
+  h4 { font-size: 1.9531rem; line-height: 1.3; letter-spacing: -0.01em; }
+  h5 { font-size: 1.5625rem; line-height: 1.35; letter-spacing: -0.01em; }
+  h6 { font-size: 1.25rem;  line-height: 1.4; letter-spacing: -0.005em; }
+  p  { line-height: 1.5; }
+
+  img {
+    content-visibility: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
   }
 }
 
@@ -42,6 +101,149 @@
 
   .text-cream-200 {
     @apply text-[#E6D5C3];
+  }
+
+  /* ============ ROYAL DESIGN SYSTEM ============ */
+
+  /* Section wrappers (60/30/10 rhythm) */
+  .section-light {
+    @apply relative bg-royal-ivory text-royal-ink;
+  }
+  .section-sand {
+    @apply relative bg-royal-sand text-royal-ink;
+  }
+  .section-dark {
+    @apply relative bg-royal-charcoal text-cream-100;
+  }
+
+  /* Eyebrow label above headings */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 uppercase text-xs font-medium md:gap-3 md:text-sm;
+    letter-spacing: 0.14em;
+    color: rgb(var(--c-eyebrow));
+    font-family: 'Cormorant Garamond', serif;
+  }
+  @media (min-width: 768px) {
+    .eyebrow {
+      letter-spacing: 0.2em;
+    }
+  }
+  .section-dark .eyebrow {
+    color: #C9A24A;
+  }
+  .eyebrow::before,
+  .eyebrow::after {
+    content: '';
+    @apply inline-block h-px w-4 md:w-8;
+    background: currentColor;
+    opacity: 0.5;
+  }
+
+  /* Serif display headings */
+  .heading {
+    font-family: 'Playfair Display', serif;
+    @apply font-semibold tracking-tightest;
+  }
+
+  .gold-rule {
+    @apply mx-auto h-px w-24;
+    background: linear-gradient(to right, transparent, #C9A24A, transparent);
+  }
+
+  /* ---- Buttons ---- */
+  .btn-royal {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5
+           text-sm font-medium uppercase tracking-[0.12em]
+           bg-gold text-night shadow-royal-sm
+           transition-all duration-300 ease-out
+           hover:-translate-y-0.5 hover:bg-gold-soft hover:shadow-royal
+           focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold;
+  }
+
+  .btn-royal-outline {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5
+           text-sm font-medium uppercase tracking-[0.12em]
+           border border-royal-ink/25 text-royal-ink
+           transition-all duration-300 ease-out
+           hover:-translate-y-0.5 hover:border-royal-ink/60 hover:bg-royal-ink hover:text-royal-ivory;
+  }
+  .section-dark .btn-royal-outline {
+    @apply border-gold/40 text-gold hover:bg-gold hover:text-night hover:border-gold;
+  }
+
+  .btn-ghost-gold {
+    @apply relative inline-flex items-center gap-2 text-sm font-medium uppercase tracking-[0.12em]
+           text-gold-deep transition-colors duration-300 hover:text-royal-ink;
+  }
+  .section-dark .btn-ghost-gold {
+    @apply text-gold hover:text-gold-soft;
+  }
+
+  /* ---- Cards ---- */
+  .card-royal {
+    @apply relative overflow-hidden rounded-xl2 bg-surface
+           border border-royal-ink/10 shadow-royal-sm
+           transition-all duration-500 ease-out
+           hover:-translate-y-1.5 hover:shadow-royal hover:border-gold/40;
+  }
+  .card-royal-dark {
+    @apply relative overflow-hidden rounded-xl2 bg-royal-espresso
+           border border-gold/15 shadow-royal-sm
+           transition-all duration-500 ease-out
+           hover:-translate-y-1.5 hover:shadow-royal hover:border-gold/40;
+  }
+
+  /* Animated underline nav link (dark navbar) */
+  .nav-link {
+    @apply relative text-sm uppercase tracking-[0.14em] font-light text-white/90
+           transition-colors duration-300 hover:text-gold;
+  }
+  .nav-link::after {
+    content: '';
+    @apply absolute -bottom-1.5 left-0 h-px w-full origin-left scale-x-0 bg-gold
+           transition-transform duration-300 ease-out;
+  }
+  .nav-link:hover::after,
+  .nav-link.is-active::after {
+    @apply scale-x-100;
+  }
+  .nav-link.is-active {
+    @apply text-gold;
+  }
+
+  /* Form fields */
+  .label-royal {
+    @apply mb-2 block text-xs font-medium uppercase tracking-[0.16em] text-gold;
+  }
+  .input-royal {
+    @apply w-full rounded-xl border border-gold/20 bg-night/40 px-4 py-3.5 text-cream-100
+           placeholder-cream-100/40 transition-all duration-300
+           focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/40;
+  }
+
+  /* Footer column heading */
+  .footer-heading {
+    @apply mb-6 text-sm font-medium uppercase tracking-[0.2em] text-gold;
+  }
+  .footer-link {
+    @apply text-cream-100/70 transition-colors duration-300 hover:text-gold;
+  }
+  .social-btn {
+    @apply flex h-10 w-10 items-center justify-center rounded-full border border-gold/40 text-gold
+           transition-all duration-300 hover:-translate-y-0.5 hover:bg-gold hover:text-night;
+  }
+
+  .chip-status {
+    @apply inline-flex items-center rounded-full px-3.5 py-1 text-xs font-semibold uppercase tracking-wider;
+  }
+  .chip-available {
+    @apply bg-gold text-night;
+  }
+  .chip-sold {
+    @apply bg-night/85 text-gold border border-gold/50;
+  }
+  .chip-soon {
+    @apply bg-gold-soft text-night;
   }
 
   .aspect-w-16 {
@@ -60,35 +262,14 @@
     animation: countUp 2s ease-out forwards;
   }
 
-  /* Pravila za BackgroundSlideshow */
-  .background-slideshow-container {
-    overflow: visible !important;
-    position: relative;
-    width: 100%;
-    height: 100vh; /* Prilagodite visinu prema potrebi */
-  }
-
+  /* Pozadinska hero slika — uvek popunjava ekran, bez prelivanja van viewporta */
   .background-slideshow-image {
-    width: auto !important; /* Zadržava prirodnu širinu na mobilnim */
-    height: auto !important; /* Zadržava prirodnu visinu na mobilnim */
-    max-width: none !important;
-    max-height: none !important;
+    object-fit: cover !important;
     object-position: center !important;
-  }
-
-  @media (max-width: 767px) {
-    .background-slideshow-image {
-      object-fit: none !important; /* Uklanja object-fit na mobilnim uređajima */
-    }
-  }
-
-  @media (min-width: 768px) {
-    .background-slideshow-image {
-      object-fit: cover !important; /* Osigurava popunjavanje ekrana na desktopu */
-      width: 100% !important;
-      height: 100% !important;
-      transform-origin: center !important;
-    }
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    transform-origin: center !important;
   }
 }
 
@@ -122,62 +303,37 @@
 /* Scroll Animation Base States */
 .scroll-animate {
   opacity: 0;
-  transform: translateY(30px);
-  
-  @media (min-width: 768px) {
-    transform: translateY(60px);
-  }
-
-  transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform, opacity;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .scroll-animate.from-left {
-  transform: translateX(-40px);
-  
-  @media (min-width: 768px) {
-    transform: translateX(-80px);
-  }
-
-  will-change: transform, opacity;
+  transform: translateX(-32px);
 }
 
 .scroll-animate.from-right {
-  transform: translateX(40px);
-  
-  @media (min-width: 768px) {
-    transform: translateX(80px);
-  }
-
-  will-change: transform, opacity;
+  transform: translateX(32px);
 }
 
 .scroll-animate.from-bottom {
-  transform: translateY(40px);
-  
-  @media (min-width: 768px) {
-    transform: translateY(80px);
-  }
-
-  will-change: transform, opacity;
+  transform: translateY(32px);
 }
 
 /* Animation States */
 .scroll-animate.animate-in {
   opacity: 1;
   transform: translate(0, 0);
-  transition: all 2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Delay Utilities */
-.delay-100 { transition-delay: 200ms; }
-.delay-200 { transition-delay: 400ms; }
-.delay-300 { transition-delay: 600ms; }
-.delay-400 { transition-delay: 800ms; }
-.delay-500 { transition-delay: 1000ms; }
-.delay-600 { transition-delay: 1200ms; }
-.delay-700 { transition-delay: 1200ms; }
-.delay-800 { transition-delay: 1600ms; }
+.delay-100 { transition-delay: 80ms; }
+.delay-200 { transition-delay: 160ms; }
+.delay-300 { transition-delay: 240ms; }
+.delay-400 { transition-delay: 320ms; }
+.delay-500 { transition-delay: 400ms; }
+.delay-600 { transition-delay: 480ms; }
+.delay-700 { transition-delay: 560ms; }
+.delay-800 { transition-delay: 640ms; }
 
 /* Floor Section Swiper customization */
 .floor-section-swiper {
@@ -245,26 +401,22 @@
 
 /* Swiper customization */
 .attractions-swiper {
-  padding-bottom: 3rem !important;
   overflow: hidden !important;
-  padding: 1rem !important;
-  margin: -1rem -1rem 0 !important;
+  padding: 0.75rem 0.5rem 3.5rem !important;
+  margin: -0.75rem -0.5rem 0 !important;
 }
 
 .attractions-swiper::-webkit-scrollbar {
   display: none;
 }
 
-.attractions-swiper .swiper-slide {
-  opacity: 0;
-  transform: scale(0.85);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  height: auto !important;
+.attractions-swiper .swiper-wrapper {
+  align-items: stretch;
 }
 
-.attractions-swiper .swiper-slide-visible {
-  opacity: 1;
-  transform: scale(1);
+.attractions-swiper .swiper-slide {
+  height: auto !important;
+  display: flex;
 }
 
 .attractions-swiper .swiper-button-next,
@@ -288,19 +440,11 @@
 }
 
 .attractions-swiper .swiper-button-next {
-  right: 5px;
-
-  @media (min-width: 768px) {
-    right: -25px;
-  }
+  right: 8px;
 }
 
 .attractions-swiper .swiper-button-prev {
-  left: 5px;
-
-  @media (min-width: 768px) {
-    left: -25px;
-  }
+  left: 8px;
 }
 
 .attractions-swiper .swiper-button-next:hover,

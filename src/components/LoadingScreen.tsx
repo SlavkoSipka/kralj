@@ -1,91 +1,89 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
-const LOADING_DURATION = 1500; // Increased from 800ms to 1500ms
+const LOADING_DURATION = 600;
 const BACKGROUND_IMAGES = [
-  "/images/Rudjinci A2.jpg",
-  "/images/A15.png",
-  "/images/A9.png",
+  '/images/Rudjinci A2.webp',
+  '/images/A15.webp',
+  '/images/A9.webp',
 ];
 
 const LoadingScreen = ({ onLoadingComplete }: { onLoadingComplete?: () => void }) => {
   const [isVisible, setIsVisible] = useState(true);
   const [progress, setProgress] = useState(0);
-  const [forceComplete, setForceComplete] = useState(false);
 
   const preloadImages = useCallback(async () => {
-    const loadImage = (src: string) => {
-      return new Promise((resolve) => {
-        const img = new Image();
-        const timeout = setTimeout(() => resolve(null), 5000); // Timeout after 5s
-        img.src = src;
-        img.onload = () => {
-          clearTimeout(timeout);
-          resolve(null);
-        };
-      });
-    };
+    const total = BACKGROUND_IMAGES.length;
+    let loaded = 0;
 
-    const totalImages = BACKGROUND_IMAGES.length;
-    let loadedImages = 0;
-
-    for (const src of BACKGROUND_IMAGES) {
-      await loadImage(src);
-      loadedImages++;
-      setProgress((loadedImages / totalImages) * 100);
-    }
+    await Promise.all(
+      BACKGROUND_IMAGES.map(
+        (src) =>
+          new Promise<void>((resolve) => {
+            const img = new Image();
+            const done = () => {
+              loaded += 1;
+              setProgress((loaded / total) * 100);
+              resolve();
+            };
+            const t = setTimeout(done, 2500);
+            img.onload = () => {
+              clearTimeout(t);
+              done();
+            };
+            img.onerror = () => {
+              clearTimeout(t);
+              done();
+            };
+            img.src = src;
+          })
+      )
+    );
   }, []);
 
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    
-    const init = async () => {
-      await preloadImages();
-      
-      timer = setTimeout(() => {
-        setIsVisible(false);
-        onLoadingComplete?.();
-      }, LOADING_DURATION);
+    let timer: ReturnType<typeof setTimeout>;
+    let fallback: ReturnType<typeof setTimeout>;
+    let finished = false;
+
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      setIsVisible(false);
+      onLoadingComplete?.();
     };
 
-    init();
-    
-    // Fallback timer to force complete after 10 seconds
-    const fallbackTimer = setTimeout(() => {
-      setForceComplete(true);
-    }, 5000); // Increased from 3000ms to 5000ms
+    preloadImages().then(() => {
+      timer = setTimeout(finish, LOADING_DURATION);
+    });
+
+    fallback = setTimeout(finish, 3500);
 
     return () => {
       clearTimeout(timer);
-      clearTimeout(fallbackTimer);
+      clearTimeout(fallback);
     };
   }, [preloadImages, onLoadingComplete]);
-
-  useEffect(() => {
-    if (forceComplete) {
-      setIsVisible(false);
-      onLoadingComplete?.();
-    }
-  }, [forceComplete, onLoadingComplete]);
 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black transition-opacity duration-700">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black transition-opacity duration-500">
       <div className="relative">
-        <img 
-          src="/images/Beli logo2.png"
+        <img
+          src="/images/Beli logo2.webp"
           alt="Kralj Residence Logo"
-          className="h-32 animate-pulse" style={{ animationDuration: '1000ms' }}
-          loading="eager" 
-          decoding="sync"
-          importance="high"
+          className="h-32 animate-pulse"
+          style={{ animationDuration: '1000ms' }}
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
         />
         <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
           <div className="w-32 h-0.5 bg-[#D4AF37]/30 relative overflow-hidden rounded-full">
-            <div 
+            <div
               className="absolute left-0 top-0 bottom-0 bg-[#D4AF37] transition-all duration-300 rounded-full"
               style={{ width: `${progress}%` }}
-            ></div>
+            />
           </div>
         </div>
       </div>

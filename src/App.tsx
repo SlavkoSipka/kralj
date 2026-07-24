@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { ChevronDown, ChevronLeft, ChevronRight, Phone, Mail, MapPin } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
+import { ChevronDown, Phone, Mail, MapPin, ArrowRight, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Navigation as SwiperNavigation, Pagination, Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -8,940 +8,679 @@ import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import LoadingScreen from './components/LoadingScreen';
 import BackgroundSlideshow from './components/BackgroundSlideshow';
-import StatisticCard from './components/StatisticCard';
 import CookieConsent from './components/CookieConsent';
-import ThankYouModal from './components/ThankYouModal'; // Uvezi ThankYouModal
+import ThankYouModal from './components/ThankYouModal';
+import SectionHeading from './components/SectionHeading';
+import ProjectCard, { ProjectCardData } from './components/ProjectCard';
+import FeaturedApartments from './components/FeaturedApartments';
 import { useScroll } from './hooks/useScroll';
 import { useParallax } from './hooks/useParallax';
 import { useIntersectionObserver } from './hooks/useIntersectionObserver';
+import { useSeo } from './hooks/useSeo';
+import { isSupabaseConfigured } from './lib/supabase';
+import { fetchVisibleBuildings, buildingPath, type Building as DbBuilding } from './lib/buildingsApi';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-const BACKGROUND_IMAGES = [
-  "/images/Rudjinci A2.jpg",
-  "/images/A15.png",
-  "/images/A9.png",
-] as const;
+const BACKGROUND_IMAGES = ['/images/Rudjinci A1.webp'] as const;
 
-const SLIDE_INTERVAL = 12000; // Increased from 5s to 12s
-const LOADING_DELAY = 1800;
+const LOADING_DELAY = 900;
+
+const RESORT_VILLAS: ProjectCardData[] = [
+  {
+    name: 'Vila I',
+    image: '/images/A12.webp',
+    size: '1200 m²',
+    apartments: 23,
+    features: ['Privatni bazen', 'Igralište za decu', 'Paviljon za roštilj'],
+    status: 'Prodato',
+  },
+  {
+    name: 'Vila II',
+    image: '/images/A13.webp',
+    size: '1200 m²',
+    apartments: 23,
+    features: ['Privatni bazen', 'Igralište za decu', 'Paviljon za roštilj'],
+    status: 'Prodato',
+  },
+  {
+    name: 'Vila III',
+    image: '/images/A11.webp',
+    size: '1500 m²',
+    apartments: 27,
+    features: ['Privatni bazen', 'Igralište za decu', 'Paviljon za roštilj'],
+    status: 'Prodato',
+  },
+  {
+    name: 'Vila IV',
+    image: '/images/A15.webp',
+    size: '1500 m²',
+    apartments: 27,
+    features: ['Privatni bazen', 'Igralište za decu', 'Paviljon za roštilj'],
+    status: 'Dostupno',
+    to: '/villa-4',
+  },
+];
+
+const VILA5: ProjectCardData = {
+  name: 'Vila V',
+  image: '/images/vila-5.webp',
+  size: '1400 m²',
+  apartments: 30,
+  features: ['Privatni bazen', 'Uređeno dvorište', 'Parking'],
+  status: 'Uskoro',
+};
+
+const ROYAL_AQUA: ProjectCardData = {
+  name: 'Royal Aqua',
+  image: '/images/Rudjinci A2.webp',
+  size: '1500 m²',
+  apartments: 27,
+  features: ['Privatni bazen', 'Uređeno dvorište', 'Ekskluzivna lokacija'],
+  status: 'Dostupno',
+  to: '/royal-aqua',
+};
+
+const ATTRACTIONS = [
+  { image: '/images/zamak kulture.webp', title: 'Zamak Belimarković', description: 'Poznat i kao Dvorac kulture, jedan od najznačajnijih kulturno-istorijskih spomenika Vrnjačke Banje, izgrađen 1888. godine u stilu italijanske renesanse.' },
+  { image: '/images/most ljubavi.webp', title: 'Most Ljubavi', description: 'Jedan od najromantičnijih simbola Vrnjačke Banje. Prema legendi, parovi koji zaključaju katanac na mostu zauvek ostaju zajedno.' },
+  { image: '/images/banjski park.webp', title: 'Banjski park', description: 'Živopisan prostor za druženje koji objedinjuje prirodu, kulturu i istoriju, pružajući mir među starim lipama i skulpturama.' },
+  { image: '/images/promenada.webp', title: 'Promenada', description: 'Dugačka preko 2 km, centralno mesto svih susreta u Vrnjačkoj Banji sa udobnim mestima za predah i osveženje.' },
+  { image: '/images/japanski vrt.webp', title: 'Japanski vrt', description: 'Mirno utočište sa kaskadnim vodopadima, drvenim mostićem i čajnom kućicom — spokojan ambijent za odmor u prirodi.' },
+  { image: '/images/izvor_sneznik_vrnjacka_banja.webp', title: 'Izvor Snežnik', description: 'Jedan od najstarijih izvora mineralne vode u Vrnjačkoj Banji, poznat po lekovitoj vodi koja pomaže varenju i metabolizmu.' },
+  { image: '/images/aqua-park-raj.webp', title: 'Aqua park', description: 'Moderan vodeni kompleks sa brojnim bazenima i toboganima, idealan za porodičnu zabavu tokom toplih letnjih dana.' },
+];
+
+/**
+ * Velika sekcija zgrade na početnoj (admin tab „Početna strana").
+ * Pozadine se smenjuju bela → braon → bež, a kartica menja stranu.
+ */
+const HOME_TONES = ['light', 'dark', 'sand'] as const;
+
+const HomeBuildingSection = ({ building, index }: { building: DbBuilding; index: number }) => {
+  const tone = HOME_TONES[index % HOME_TONES.length];
+  const isDark = tone === 'dark';
+  const cardLeft = index % 2 === 0;
+  const available = building.status === 'Dostupno';
+  const soon = building.status === 'Uskoro';
+  const path = buildingPath(building.slug);
+
+  const card: ProjectCardData = {
+    name: building.name,
+    image: building.image_url ?? '',
+    size: building.size_label ?? '—',
+    apartments: building.total_apartments ?? 0,
+    features: building.features,
+    status: building.status,
+    to: available ? path : undefined,
+  };
+
+  const sectionClass =
+    tone === 'light' ? 'section-light' : tone === 'sand' ? 'section-sand' : 'section-dark overflow-hidden';
+
+  return (
+    <section className={sectionClass}>
+      <div className="relative mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-20">
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Kartica */}
+          <div
+            className={
+              cardLeft
+                ? 'scroll-animate from-left order-1'
+                : 'scroll-animate from-right order-1 w-full max-w-md justify-self-center lg:order-2 lg:justify-self-end'
+            }
+          >
+            <ProjectCard
+              data={card}
+              variant={isDark ? 'dark' : 'light'}
+              className={!isDark && soon ? 'bg-royal-sand border-gold/30' : ''}
+            />
+          </div>
+
+          {/* Tekst */}
+          <div className={cardLeft ? 'scroll-animate from-right order-2' : 'scroll-animate from-left order-2 lg:order-1'}>
+            <SectionHeading
+              align="left"
+              eyebrow={building.eyebrow || 'Kralj Residence'}
+              title={building.home_title || building.name}
+              subtitle={building.description ?? undefined}
+            />
+
+            {building.features.length > 0 && (
+              <ul className={`mt-8 grid grid-cols-2 gap-4 ${isDark ? 'text-cream-100/80' : 'text-royal-stone'}`}>
+                {building.features.map((f) => (
+                  <li key={f} className="flex items-center text-ts-p">
+                    <span className="mr-3 inline-block h-1.5 w-1.5 rounded-full bg-gold" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {available ? (
+              <div className="mt-10 hidden flex-wrap gap-4 md:flex">
+                <Link to={path} className="btn-royal">
+                  Ponuda stanova
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+                <a href="#contact" className="btn-royal-outline">Kontakt</a>
+              </div>
+            ) : soon ? (
+              <div className="mt-10 flex flex-wrap items-center gap-4">
+                <a href="tel:+381606112327" className="btn-royal-outline">
+                  <Phone className="h-4 w-4" />
+                  Pozovite za više informacija
+                </a>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+/** Spaja statičke podatke kartice sa stanjem iz baze (status, slika, link). */
+const mergeWithDb = (staticData: ProjectCardData, row?: DbBuilding): ProjectCardData => {
+  if (!row) return staticData;
+  return {
+    ...staticData,
+    name: row.name,
+    image: row.image_url ?? staticData.image,
+    size: row.size_label ?? staticData.size,
+    apartments: row.total_apartments ?? staticData.apartments,
+    features: row.features.length ? row.features : staticData.features,
+    status: row.status,
+    to: row.status === 'Dostupno' ? buildingPath(row.slug) : undefined,
+  };
+};
 
 function App() {
   const [isVisible, setIsVisible] = useState(false);
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false); // Dodato stanje za modal
+  const currentImageIndex = 0;
+  const [, setIsLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [dbBuildings, setDbBuildings] = useState<Record<string, DbBuilding>>({});
   const aboutSectionRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { scrolled, showScrollIndicator, scrollPosition } = useScroll();
   const { calculateScale, calculateTextOpacity, calculateTextTransform } = useParallax(scrollPosition);
   useIntersectionObserver();
+  useSeo({
+    title: 'Prodaja stanova Vrnjačka Banja | Kralj Residence – Novogradnja od investitora',
+    description:
+      'Direktna prodaja stanova u Vrnjačkoj Banji od investitora. Novogradnja, luksuzni apartmani i vile u srcu banje – Kralj Residence. Pozovite 060 611 2327.',
+    path: '/',
+  });
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    const visibilityTimer = setTimeout(() => setIsVisible(true), LOADING_DELAY);
+    return () => clearTimeout(visibilityTimer);
   }, []);
 
+  // Statusi zgrada iz baze (admin panel) — statički podaci ostaju fallback
   useEffect(() => {
-    const visibilityTimer = setTimeout(() => {
-      setIsVisible(true);
-    }, LOADING_DELAY);
-
-    const slideInterval = setInterval(() => {
-      setCurrentImageIndex(prev => (prev + 1) % BACKGROUND_IMAGES.length);
-    }, SLIDE_INTERVAL);
-    
-    return () => {
-      clearTimeout(visibilityTimer);
-      clearInterval(slideInterval);
-    };
+    if (!isSupabaseConfigured) return;
+    fetchVisibleBuildings()
+      .then((rows) => setDbBuildings(Object.fromEntries(rows.map((r) => [r.slug, r]))))
+      .catch(() => undefined);
   }, []);
 
-  const handleCloseThankYou = () => {
-    setIsModalOpen(false);
-    window.scrollTo({ top: 0 }); // Opcionalno, ako želiš da scroll-uješ na vrh
-  };
+  const vila5 = mergeWithDb(VILA5, dbBuildings['vila-5']);
+  const royalAqua = mergeWithDb(ROYAL_AQUA, dbBuildings['royal-aqua']);
+  const resortVillas = [
+    mergeWithDb(RESORT_VILLAS[0], dbBuildings['vila-1']),
+    mergeWithDb(RESORT_VILLAS[1], dbBuildings['vila-2']),
+    mergeWithDb(RESORT_VILLAS[2], dbBuildings['villa-3']),
+    mergeWithDb(RESORT_VILLAS[3], dbBuildings['villa-4']),
+  ];
+  const vila5Available = vila5.status === 'Dostupno';
+
+  // Zgrade koje admin uključi na početnu (tab „Početna strana"); statički fallback dok baza nije spremna
+  const homeBuildings = Object.values(dbBuildings)
+    .filter((b) => b.featured_home)
+    .sort((a, b) => a.home_sort - b.home_sort);
 
   return (
     <div className="relative min-h-screen">
       <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />
-      <BackgroundSlideshow 
-        images={BACKGROUND_IMAGES}
+      <BackgroundSlideshow
+        images={[...BACKGROUND_IMAGES]}
         currentIndex={currentImageIndex}
         calculateScale={calculateScale}
       />
 
-      {/* Content */}
       <div className="relative z-10">
-        {/* Navigation Bar */}
         <Navigation scrolled={scrolled} />
 
-        {/* Hero Content */}
-        <div className="min-h-screen flex items-center relative" style={{ clipPath: 'inset(0)' }}>
+        {/* ===================== HERO ===================== */}
+        <header className="relative flex min-h-screen items-center">
+          {/* Scrim for legibility */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/15" />
+
           <div
-            className="w-full"
+            className="relative w-full"
             style={{
               opacity: calculateTextOpacity(),
               transform: calculateTextTransform(),
-              transition: 'transform 1s cubic-bezier(0.16, 1, 0.3, 1), opacity 1s cubic-bezier(0.16, 1, 0.3, 1)'
+              transition: 'transform 1s cubic-bezier(0.16,1,0.3,1), opacity 1s cubic-bezier(0.16,1,0.3,1)',
             }}
           >
-            <div className="container-fluid px-8">
-              <div className="max-w-xl">
-                <h1 
-                  className={`text-[#D4AF37] text-5xl md:text-6xl mb-8 leading-none tracking-tight opacity-0 transform -translate-y-10 transition-all duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${isVisible ? 'opacity-100 translate-y-0' : ''}`} 
+            <div className="container-fluid px-6 md:px-10 lg:px-16">
+              <div className="max-w-2xl">
+                <span
+                  className={`eyebrow text-gold transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}
+                >
+                  <span className="whitespace-nowrap">
+                    Vrnjačka Banja<span className="hidden sm:inline"> · Direktno od investitora</span>
+                  </span>
+                </span>
+
+                <h1
+                  className={`heading mt-6 text-ts-h2 text-cream-100 transition-all duration-1000 delay-100 md:text-[4.5rem] ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6'}`}
                   style={{ fontFamily: 'Playfair Display' }}
                 >
-                  KRALJ RESIDENCE
+                  Kralj Residence
                 </h1>
-                <p 
-                  className={`text-xl text-cream-100 mb-12 leading-relaxed font-light tracking-wide opacity-0 transform -translate-y-10 transition-all duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] delay-300 ${isVisible ? 'opacity-100 translate-y-0' : ''}`}
+
+                <p
+                  className={`mt-6 max-w-xl text-ts-h6 font-light leading-relaxed text-cream-100/85 transition-all duration-1000 delay-200 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6'}`}
                 >
-                  Ekskluzivni stambeni kompleks u najlepšem delu Vrnjačke Banje, gde se luksuz susreće sa prirodom
+                  Novogradnja i direktna prodaja stanova u najlepšem delu Vrnjačke Banje.
+                  Tu se kraljevski luksuz susreće sa prirodom.
                 </p>
-                <div className="relative" ref={dropdownRef}>
-                  <button
-                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className={`relative overflow-hidden group flex items-center h-12 z-20 w-64 opacity-0 transform -translate-y-10 transition-all duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] delay-500 ${isVisible ? 'opacity-100 translate-y-0' : ''}`}
-                  >
-                    <span className="relative z-10 inline-flex items-center justify-center text-base uppercase tracking-wider font-light px-8 h-full w-full border border-[#D4AF37] text-[#D4AF37] transition-colors duration-300 group-hover:text-black bg-black/30 backdrop-blur-sm">
-                      Nekretnine
-                      <svg className={`w-4 h-4 ml-2 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </span>
-                    <div className="absolute inset-0 w-0 bg-[#D4AF37] transition-all duration-300 ease-out group-hover:w-full"></div>
-                  </button>
 
-                  {/* Dropdown Menu */}
-                  <div 
-                    className={`absolute left-0 w-64 transition-all duration-300 origin-top z-10 ${
-                      isDropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
-                    }`}
-                  >
-                    <div className="bg-black/60 backdrop-blur-sm border border-[#D4AF37] border-t-0 rounded-b-lg shadow-lg overflow-hidden" 
-                         style={{ boxShadow: '0 4px 30px rgba(212, 175, 55, 0.2)' }}>
-                      <div className="relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-b from-[#D4AF37]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <Link
-                          to="/properties"
-                          onClick={() => {
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                            setIsDropdownOpen(false);
-                          }}
-                          className="block px-6 py-4 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition-all duration-300 text-[15px] relative group/item"
-                        >
-                          <span className="relative z-10">Kralj Residence Resort</span>
-                          <div className="absolute inset-0 bg-[#D4AF37]/10 transform scale-x-0 origin-left transition-transform duration-300 group-hover/item:scale-x-100"></div>
-                        </Link>
-                        <Link 
-                          to="/royal-aqua"
-                          onClick={() => setIsDropdownOpen(false)}
-                          className="block px-6 py-4 text-[#D4AF37] hover:bg-[#D4AF37] hover:text-black transition-all duration-300 text-[15px] border-t border-[#D4AF37]/20 relative group/item"
-                        >
-                          <span className="relative z-10">Kralj Residence Royal Aqua</span>
-                          <div className="absolute inset-0 bg-[#D4AF37]/10 transform scale-x-0 origin-left transition-transform duration-300 group-hover/item:scale-x-100"></div>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="relative pt-32 w-full">
-          {/* Clean background with border lines */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/80 to-black/95">
-            <div className="absolute inset-0 bg-[#F5E6D3]/5 mix-blend-overlay"></div>
-            <div className="absolute inset-0 opacity-5"
-              style={{
-                backgroundImage: `
-                  linear-gradient(45deg, #D4AF37 1px, transparent 1px),
-                  linear-gradient(-45deg, #D4AF37 1px, transparent 1px)
-                `,
-                backgroundSize: '60px 60px',
-                backgroundPosition: 'center center',
-                mask: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)'
-              }}
-            ></div>
-            <div className="absolute inset-0 bg-radial-gradient"></div>
-          </div>
-          
-          <div className="relative max-w-7xl mx-auto px-4">
-            {/* Title above cards */}
-            <div className="text-center mb-24 scroll-animate">
-              <div className="inline-block relative">
-                <div className="flex flex-col md:flex-row items-center justify-center space-x-0 md:space-x-4 mb-8">
-                  <div className="w-8 md:w-16 h-px bg-[#D4AF37]/30 mb-4 md:mb-0"></div>
-                  <h2 className="text-4xl md:text-6xl text-[#D4AF37] mb-2 md:mb-8 font-serif" style={{ fontFamily: 'Playfair Display' }}>
-                    <span className="block md:inline">Kralj Residence</span>
-                    <span className="block md:inline md:ml-2">Resort</span>
-                  </h2>
-                  <div className="w-8 md:w-16 h-px bg-[#D4AF37]/30 mt-4 md:mt-0"></div>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-16 mx-auto pb-32">
-              {/* Kralj Residence Resort Group */}
-              <div className="villas-grid">
-                <div className="relative">
-                  {/* Navigation Buttons (visible only on mobile) */}
-                  <button 
-                    onClick={() => {
-                      const container = document.querySelector('.villas-scroll-container');
-                      if (container) {
-                        const cardWidth = container.querySelector('div')?.clientWidth || 0;
-                        container.scrollLeft -= cardWidth + 24;
-                      }
-                    }}
-                    className="scroll-nav-button prev lg:hidden"
-                    aria-label="Previous"
-                  >
-                    <ChevronLeft className="w-6 h-6" />
-                  </button>
-                  <button 
-                    onClick={() => {
-                      const container = document.querySelector('.villas-scroll-container');
-                      if (container) {
-                        const cardWidth = container.querySelector('div')?.clientWidth || 0;
-                        container.scrollLeft += cardWidth + 24;
-                      }
-                    }}
-                    className="scroll-nav-button next lg:hidden"
-                    aria-label="Next"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </button>
-
-                  {/* Scrollable Container */}
-                  <div 
-                    className="flex lg:grid lg:grid-cols-4 gap-6 lg:gap-8 overflow-x-auto pb-6 lg:pb-0 px-4 -mx-4 lg:mx-0 lg:px-0 scroll-smooth hide-scrollbar villas-scroll-container"
-                  >
-                    {[
-                      {
-                        id: 1,
-                        group: "resort",
-                        name: "Kralj Residence - Vila I",
-                        image: "/images/A12.png",
-                        size: "1200m²",
-                        apartments: 23,
-                        features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"],
-                        status: "Prodato"
-                      },
-                      {
-                        id: 2,
-                        group: "resort",
-                        name: "Kralj Residence - Vila II",
-                        image: "/images/A13.png",
-                        size: "1200m²",
-                        apartments: 23,
-                        features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"],
-                        status: "Prodato"
-                      },
-                      {
-                        id: 3,
-                        group: "resort",
-                        name: "Kralj Residence - Vila III",
-                        image: "/images/A11.png",
-                        size: "1500m²",
-                        apartments: 27,
-                        features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"],
-                        status: "Dostupno"
-                      },
-                      {
-                        id: 4,
-                        group: "resort",
-                        name: "Kralj Residence - Vila IV",
-                        image: "/images/A15.png",
-                        size: "1500m²",
-                        apartments: 27,
-                        features: ["Privatni bazen", "Igralište za decu", "Paviljon za roštilj"],
-                        status: "Dostupno"
-                      }
-                    ].map((villa) => (
-                      <div 
-                        key={villa.id}
-                        className="relative overflow-hidden rounded-none scroll-animate group flex-none w-[85vw] sm:w-[400px] lg:w-auto first:ml-[7.5vw] lg:first:ml-0"
-                        style={{ 
-                          transform: 'translateY(0)',
-                          opacity: 1,
-                          transition: 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                          transitionDelay: `${(villa.id) * 150}ms`
-                        }}
-                      >
-                        <div className={`bg-[#1A1614] border border-[#D4AF37]/20 rounded-2xl relative ${
-                          villa.id > 2 ? 'transform transition-all duration-500 hover:scale-[1.02] hover:border-[#D4AF37]/40 hover:shadow-[0_0_50px_rgba(212,175,55,0.2)]' : ''
-                        }`}>
-                          {/* Decorative corners for available villas */}
-                          {villa.id > 2 && (
-                            <>
-                              <div className="absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2 border-[#D4AF37]/0 rounded-tl opacity-0 group-hover:opacity-100 group-hover:border-[#D4AF37]/40 transition-all duration-700"></div>
-                              <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-2 border-r-2 border-[#D4AF37]/0 rounded-br opacity-0 group-hover:opacity-100 group-hover:border-[#D4AF37]/40 transition-all duration-700"></div>
-                            </>
-                          )}
-                          {/* Image */}
-                          <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-t-xl relative">
-                            <img 
-                              src={villa.image} 
-                              alt={villa.name}
-                              className={`w-full h-full object-cover shadow-none ${
-                                villa.id > 2 ? 'transform transition-all duration-500 ease-out group-hover:scale-105' : ''
-                              }`}
-                            />
-                            <div className={`absolute inset-0 bg-black/30 transition-opacity duration-500 ${
-                              villa.id > 2 ? 'opacity-0 group-hover:opacity-100' : 'opacity-30'
-                            }`}></div>
-                            {villa.id > 2 && (
-                              <div className="absolute inset-0 bg-gradient-to-t from-[#D4AF37]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                            )}
-                          </div>
-
-                          {/* Villa Details */}
-                          <div className={`p-8 rounded-b-2xl ${villa.id > 2 ? 'transform transition-all duration-300 group-hover:translate-y-[-2px]' : ''}`}>
-                            <h2 className="text-xl text-[#D4AF37] font-serif mb-4 font-medium">{villa.name}</h2>
-
-                            <div className="grid grid-cols-2 gap-4 text-white/90 mb-4 border-b border-[#D4AF37]/20 pb-4">
-                              <div>
-                                <p className="text-[#D4AF37] font-medium text-xs mb-1">Površina</p>
-                                <p className="text-lg font-medium">{villa.size}</p>
-                              </div>
-                              <div>
-                                <p className="text-[#D4AF37] font-medium text-xs mb-1">Stanovi</p>
-                                <p className="text-lg font-medium">{villa.apartments}</p>
-                              </div>
-                            </div>
-                            
-                            {/* Features */}
-                            <div className={`space-y-2 ${villa.id > 2 ? 'mb-4' : 'mb-8'}`}>
-                              {villa.features.map((feature, index) => (
-                                <p key={index} className="text-white/80 text-base flex items-center">
-                                  <span className="inline-block w-1 h-1 bg-[#D4AF37] rounded-full mr-3" />
-                                  {feature}
-                                </p>
-                              ))}
-                            </div>
-                            
-                            <div className="flex items-center justify-end pt-4 border-t border-[#D4AF37]/20">
-                              {villa.id <= 2 ? (
-                                <span className="relative overflow-hidden bg-[#D4AF37] text-black px-6 py-2 rounded-lg text-sm tracking-wider font-medium shadow-lg border border-[#D4AF37]/50 inline-flex items-center">
-                                  PRODATO
-                                </span>
-                              ) : (
-                                <Link 
-                                  to={villa.id === 3 ? "/villa-3" : villa.id === 4 ? "/villa-4" : "#"}
-                                  className="relative overflow-hidden bg-[#D4AF37] text-black px-6 py-2 rounded-lg text-sm tracking-wider font-medium shadow-lg hover:shadow-xl transform transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#E5C048] hover:scale-105 group border border-[#D4AF37]/50"
-                                >
-                                  <span className="relative z-10">
-                                  PONUDA STANOVA
-                                  </span>
-                                  <div className="absolute inset-0 bg-gradient-to-r from-[#E5C048] via-white to-[#E5C048] transform scale-x-0 origin-left transition-transform duration-300 ease-out group-hover:scale-x-100"></div>
-                                </Link>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Kralj Residence Royal Aqua Section */}
-              <div className="w-full mt-32">
-                <div className="text-center mb-24 scroll-animate">
-                  <div className="inline-block relative">
-                    <div className="flex flex-col md:flex-row items-center justify-center space-x-0 md:space-x-4 mb-8">
-                      <div className="w-8 md:w-16 h-px bg-[#D4AF37]/30 mb-4 md:mb-0"></div>
-                      <h2 className="text-4xl md:text-6xl text-[#D4AF37] mb-2 md:mb-8 font-serif" style={{ fontFamily: 'Playfair Display' }}>
-                        Kralj Residence Royal Aqua
-                      </h2>
-                      <div className="w-8 md:w-16 h-px bg-[#D4AF37]/30 mt-4 md:mt-0"></div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex justify-center">
-                  <div 
-                    className="relative overflow-hidden rounded-none scroll-animate group max-w-sm"
-                    style={{ transitionDelay: '500ms' }}
-                  >
-                    <div className="bg-[#1A1614] border border-[#D4AF37]/20 rounded-2xl relative transform transition-all duration-700 hover:scale-[1.02] hover:border-[#D4AF37]/40 hover:shadow-[0_0_50px_rgba(212,175,55,0.2)]">
-                      {/* Image */}
-                      <div className="aspect-w-16 aspect-h-9 overflow-hidden rounded-t-xl relative">
-                        <img 
-                          src="/images/Rudjinci A2.jpg"
-                          alt="Kralj Residence Royal Aqua"
-                          className="w-full h-full object-cover transform transition-all duration-1000 ease-out group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#D4AF37]/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700"></div>
-                      </div>
-
-                      <div className="p-8 rounded-b-2xl transform transition-all duration-500 group-hover:translate-y-[-4px]">
-                        <h2 className="text-xl text-[#D4AF37] font-serif mb-4 font-medium">Kralj Residence - Royal Aqua</h2>
-
-                        <div className="grid grid-cols-2 gap-4 text-white/90 mb-4 border-b border-[#D4AF37]/20 pb-4">
-                          <div>
-                            <p className="text-[#D4AF37] font-medium text-xs mb-1">Površina</p>
-                            <p className="text-lg font-medium">1500m²</p>
-                          </div>
-                          <div>
-                            <p className="text-[#D4AF37] font-medium text-xs mb-1">Stanovi</p>
-                            <p className="text-lg font-medium">27</p>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2 mb-4">
-                          <p className="text-white/80 text-base flex items-center">
-                            <span className="inline-block w-1 h-1 bg-[#D4AF37] rounded-full mr-3" />
-                            Privatni bazen
-                          </p>
-                          <p className="text-white/80 text-base flex items-center">
-                            <span className="inline-block w-1 h-1 bg-[#D4AF37] rounded-full mr-3" />
-                            Uređeno dvorište
-                          </p>
-                          <p className="text-white/80 text-base flex items-center">
-                            <span className="inline-block w-1 h-1 bg-[#D4AF37] rounded-full mr-3" />
-                            Ekskluzivna lokacija
-                          </p>
-                        </div>
-                        
-                        <div className="flex items-center justify-end pt-4 border-t border-[#D4AF37]/20">
-                          <Link 
-                            to="/royal-aqua"
-                            className="relative overflow-hidden bg-[#D4AF37] text-black px-6 py-2 rounded-lg text-sm tracking-wider font-medium shadow-lg hover:shadow-xl transform transition-all duration-500 hover:-translate-y-0.5 hover:bg-[#E5C048] hover:scale-105 group border border-[#D4AF37]/50"
-                          >
-                            <span className="relative z-10">
-                            Ponuda stanova
-                            </span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#E5C048] via-white to-[#E5C048] transform scale-x-0 origin-left transition-transform duration-700 ease-out group-hover:scale-x-100"></div>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {showScrollIndicator && (
-          <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 transition-opacity duration-300 flex flex-col items-center">
-            <ChevronDown className="h-8 w-8 text-[#D4AF37] animate-bounce" />
-            <p className="text-cream-100 text-sm mt-2 text-center">Skrolujte za više</p>
-          </div>
-        )}
-        
-
-        {/* About Us Section */}
-        <div id="about" ref={aboutSectionRef} className="relative pt-32 pb-32 overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/80 to-black/95"></div>
-            <div 
-              className="absolute inset-0 opacity-10"
-              style={{
-                backgroundImage: `
-                  linear-gradient(45deg, #D4AF37 1px, transparent 1px),
-                  linear-gradient(-45deg, #D4AF37 1px, transparent 1px)
-                `,
-                backgroundSize: '60px 60px',
-                backgroundPosition: 'center center',
-                mask: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)'
-              }}
-            ></div>
-            <div className="absolute inset-0 bg-radial-gradient"></div>
-          </div>
-
-          {/* Section Header */}
-          <div className="relative text-center mb-24 z-10">
-            <div className="flex items-center justify-center space-x-4 mb-6 scroll-animate">
-              <div className="w-16 h-px bg-gradient-to-r from-transparent to-[#D4AF37]/30"></div>
-              <span className="text-[#D4AF37] uppercase tracking-[0.2em] text-sm font-light">O nama</span>
-              <div className="w-16 h-px bg-gradient-to-l from-transparent to-[#D4AF37]/30"></div>
-            </div>
-            <h2 className="text-5xl font-serif text-[#D4AF37] mb-6 scroll-animate delay-200" style={{ fontFamily: 'Playfair Display' }}>
-              Kralj Residence
-            </h2>
-            <div className="w-24 h-px bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-2 scroll-animate delay-300"></div>
-          </div>
-
-          {/* Top Image and Text */}
-          <div className="relative z-10 grid lg:grid-cols-12 gap-16 items-center mb-32 scroll-fade-in max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="lg:col-span-7 lg:col-start-1 relative group transform transition-transform duration-700 hover:scale-105 scroll-animate from-left delay-400">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-2xl">
-                <img 
-                  src="/images/hotel kralj slika.jpg"
-                  alt="Kralj Residence Bazen"
-                  className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              </div>
-              <div className="absolute -inset-4 border-2 border-[#D4AF37]/20 rounded-lg -z-10 transform transition-all duration-500 group-hover:border-[#D4AF37]/40"></div>
-              <div className="absolute -inset-4 border-2 border-[#D4AF37]/10 rounded-lg -z-10 transform rotate-2 transition-all duration-500 group-hover:rotate-3 group-hover:border-[#D4AF37]/30"></div>
-              <div className="absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2 border-[#D4AF37]/40 rounded-tl"></div>
-              <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-2 border-r-2 border-[#D4AF37]/40 rounded-br"></div>
-            </div>
-
-            <div className="lg:col-span-5 lg:pl-12 scroll-animate from-right delay-500">
-              <div className="relative backdrop-blur-sm bg-gradient-to-br from-black/30 via-black/20 to-black/10 p-8 rounded-lg border border-[#D4AF37]/10">
-                <div className="absolute -left-6 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#D4AF37]/0 via-[#D4AF37] to-[#D4AF37]/0"></div>
-                <div className="space-y-8">
-                  <div>
-                    <h3 className="text-[#D4AF37] text-3xl mb-4 font-medium" style={{ fontFamily: 'Playfair Display' }}>
-                      O nama
-                    </h3>
-                    <div className="w-16 h-px bg-gradient-to-r from-[#D4AF37] to-transparent"></div>
-                  </div>
-                  
-                  <div className="space-y-6">
-                    <p className="text-cream-100/90 text-lg leading-relaxed">
-                      Kralj Residence je ogranak kompanije Kralj doo, koja već tri decenije uspešno posluje u Vrnjačkoj Banji. Sa iskustvom u ugostiteljstvu i turizmu, kao i radom u prestižnom hotelu Kralj koji je prisutan na tržištu skoro 20 godina, Kralj doo je stekao izuzetnu reputaciju za kvalitet i uslugu.
-                    </p>
-                    <p className="text-cream-100/90 text-lg leading-relaxed">
-                      Od 2008. godine, ogranak Kralj Residence se specijalizovao za izgradnju luksuznih stambenih kompleksa i ekskluzivnih stanova. Naša posvećenost vrhunskom dizajnu, sigurnosti i udobnosti garantuje visok standard stanovanja koji zadovoljava potrebe savremenih kupaca.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Content Grid */}
-            <div className="space-y-32">
-              {/* First Image and Text */}
-              <div className="grid lg:grid-cols-12 gap-16 items-center scroll-fade-in order-2 lg:order-none">
-                <div className="lg:col-span-5 lg:col-start-1 lg:pl-12 scroll-animate from-left delay-500 order-2 lg:order-none">
-                  <div className="relative backdrop-blur-sm bg-gradient-to-br from-black/30 via-black/20 to-black/10 p-8 rounded-lg border border-[#D4AF37]/10">
-                    <div className="absolute -left-6 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#D4AF37]/0 via-[#D4AF37] to-[#D4AF37]/0"></div>
-                    <div className="space-y-8">
-                      <div className="space-y-6">
-                        <div>
-                          <h4 className="text-[#D4AF37] text-3xl mb-4 scroll-animate delay-600" style={{ fontFamily: 'Playfair Display' }}>Naša Vizija</h4>
-                          <p className="text-cream-100/90 text-lg leading-relaxed scroll-animate delay-700">
-                            Naša vizija je da Kralj Residence postane sinonim za kvalitetnu gradnju i luksuz u Vrnjačkoj Banji. Nastojimo da svaka naša investicija doprinese unapređenju infrastrukture i životnog standarda, stvarajući domove koji su više od mesta za život.
-                          </p>
-                          <p className="text-cream-100/90 text-lg leading-relaxed mt-6 scroll-animate delay-800">
-                            Kroz inovativne projekte i pažljivo odabrane lokacije, želimo da nastavimo da razvijamo prepoznatljiv brend koji inspiriše i zadovoljava naše klijente.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="lg:col-span-7 lg:col-start-6 relative group transform transition-transform duration-700 hover:scale-105 scroll-animate from-right delay-400 order-1 lg:order-none">
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-2xl">
-                    <img 
-                      src="/images/A10.png"
-                      alt="Kralj Residence Eksterijer"
-                      className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  </div>
-                  <div className="absolute -inset-4 border-2 border-[#D4AF37]/20 rounded-lg -z-10 transform transition-all duration-500 group-hover:border-[#D4AF37]/40"></div>
-                  <div className="absolute -inset-4 border-2 border-[#D4AF37]/10 rounded-lg -z-10 transform rotate-2 transition-all duration-500 group-hover:rotate-3 group-hover:border-[#D4AF37]/30"></div>
-                  <div className="absolute -top-2 -left-2 w-8 h-8 border-t-2 border-l-2 border-[#D4AF37]/40 rounded-tl"></div>
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 border-b-2 border-r-2 border-[#D4AF37]/40 rounded-br"></div>
-                </div>
-              </div>
-
-              {/* Statistics Section integrated within About Us */}
-              <div className="relative py-16 hidden lg:block">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                  <StatisticCard
-                    icon={
-                      <svg className="w-10 h-10 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                      </svg>
-                    }
-                    endValue={4800}
-                    label="Površina Kompleksa (m²)"
-                    unit="m²"
-                  />
-                  <StatisticCard
-                    icon={
-                      <svg className="w-10 h-10 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                      </svg>
-                    }
-                    endValue={98}
-                    label="Stambenih jedinica"
-                    delay={600}
-                  />
-                  <StatisticCard
-                    icon={
-                      <svg className="w-10 h-10 text-[#D4AF37]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
-                      </svg>
-                    }
-                    endValue={69}
-                    label="Parking mesta"
-                    delay={800}
-                  />
-                </div>
-              </div>
-              
-              {/* Mobile Image and Text (Visible only on mobile) */}
-              <div className="lg:hidden relative py-16">
-                <div className="relative group transform transition-transform duration-700 hover:scale-105 scroll-animate from-right delay-400">
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-lg shadow-2xl">
-                    <img 
-                      src="/images/Kralj.jpg"
-                      alt="Kralj Residence Enterijer"
-                      className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  </div>
-                  <div className="absolute -inset-4 border-2 border-[#D4AF37]/20 rounded-lg -z-10 transform transition-all duration-500 group-hover:border-[#D4AF37]/40"></div>
-                  <div className="absolute -inset-4 border-2 border-[#D4AF37]/10 rounded-lg -z-10 transform -rotate-2 transition-all duration-500 group-hover:-rotate-3 group-hover:border-[#D4AF37]/30"></div>
-                  <div className="absolute -top-2 -right-2 w-8 h-8 border-t-2 border-r-2 border-[#D4AF37]/40 rounded-tr"></div>
-                  <div className="absolute -bottom-2 -left-2 w-8 h-8 border-b-2 border-l-2 border-[#D4AF37]/40 rounded-bl"></div>
-                </div>
-                
-                <div className="mt-8">
-                  <div className="relative backdrop-blur-sm bg-gradient-to-br from-black/30 via-black/20 to-black/10 p-8 rounded-lg border border-[#D4AF37]/10">
-                    <div className="absolute -right-6 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#D4AF37]/0 via-[#D4AF37] to-[#D4AF37]/0"></div>
-                    <div className="space-y-8">
-                      <div>
-                        <h3 className="text-[#D4AF37] text-3xl mb-3 font-medium" style={{ fontFamily: 'Playfair Display' }}>
-                          Tradicija i Kvalitet
-                        </h3>
-                        <div className="w-16 h-px bg-gradient-to-r from-[#D4AF37] to-transparent"></div>
-                      </div>
-                      
-                      <div className="space-y-6">
-                        <div>
-                          <h4 className="text-[#D4AF37] text-2xl mb-4" style={{ fontFamily: 'Playfair Display' }}>Tradicija Luksuza</h4>
-                          <p className="text-cream-100/80 text-lg leading-relaxed">
-                            Hotel Kralj je jedan od najluksuznijih hotela u Vrnjačkoj Banji, sa tradicijom dugom preko dve decenije.
-                          </p>
-                        </div>
-                        
-                        <div>
-                          <h4 className="text-[#D4AF37] text-2xl mb-4" style={{ fontFamily: 'Playfair Display' }}>Ekskluzivna Lokacija</h4>
-                          <p className="text-cream-100/80 text-lg leading-relaxed">
-                            Smešten u samom srcu banje, hotel nudi jedinstveno iskustvo boravka u elegantno uređenim sobama i apartmanima.
-                          </p>
-                        </div>
-                        
-                        <div>
-                          <h4 className="text-[#D4AF37] text-2xl mb-4" style={{ fontFamily: 'Playfair Display' }}>Premium Sadržaji</h4>
-                          <p className="text-cream-100/80 text-lg leading-relaxed">
-                            Sa svojim wellness centrom, restoranom domaće i internacionalne kuhinje, i profesionalnim osobljem, Hotel Kralj postavlja standarde u hotelijerstvu Vrnjačke Banje.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Parallax Gap Section */}
-        <div className="relative h-[50vh] overflow-hidden bg-black">
-          <div 
-            className="absolute inset-0 bg-cover bg-center hidden md:block"
-            style={{
-              backgroundImage: 'url("/images/Stan 17 S1.png")',
-              filter: 'brightness(0.7)',
-              backgroundAttachment: 'fixed'
-            }}
-          />
-          <div 
-            className="absolute inset-0 bg-cover bg-center md:hidden"
-            style={{
-              backgroundImage: 'url("/images/Stan 17 S1.png")',
-              filter: 'brightness(0.7)'
-            }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-transparent to-black/90" />
-          
-          <div className="absolute inset-0">
-            <div 
-              className="absolute inset-0 opacity-5"
-              style={{
-                backgroundImage: `
-                  linear-gradient(45deg, #D4AF37 1px, transparent 1px),
-                  linear-gradient(-45deg, #D4AF37 1px, transparent 1px)
-                `,
-                backgroundSize: '30px 30px',
-                backgroundPosition: 'center center'
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Attractions Section */}
-        <div className="relative py-32 w-full overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/95 to-black/95">
-            <div className="absolute inset-0 bg-[#F5E6D3]/5 mix-blend-overlay"></div>
-            <div className="absolute inset-0 opacity-5"
-              style={{
-                backgroundImage: `
-                  linear-gradient(45deg, #D4AF37 1px, transparent 1px),
-                  linear-gradient(-45deg, #D4AF37 1px, transparent 1px)
-                `,
-                backgroundSize: '60px 60px',
-                backgroundPosition: 'center center',
-                mask: 'linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)'
-              }}
-            ></div>
-            <div className="absolute inset-0 bg-radial-gradient"></div>
-          </div>
-
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Section Header */}
-            <div className="text-center mb-16">
-              <h2 
-                className="text-4xl md:text-5xl text-[#D4AF37] mb-6 scroll-animate"
-                style={{ fontFamily: 'Playfair Display' }}
-              >
-                U srcu Vrnjačke Banje
-              </h2>
-              <p className="text-cream-100/80 text-lg max-w-3xl mx-auto leading-relaxed scroll-animate delay-200">
-                Dobrodošli u Vrnjačku Banju, biser srpskog turizma. U nastavku vas očekuju najznačajnije atrakcije koje ovu banju čine jedinstvenom i nezaboravnom. 
-                Upoznajte se sa mestima i doživljajima koji privlače posetioce iz celog sveta, a koji su uz život u Kralj Residence na korak od vas.
-              </p>
-            </div>
-
-            {/* Attractions Grid */}
-            <Swiper
-              modules={[SwiperNavigation, Pagination, Autoplay]}
-              spaceBetween={30}
-              slidesPerView={1}
-              loop
-              centeredSlides
-              watchSlidesProgress={true}
-              speed={800}
-              navigation
-              pagination={{ clickable: true }}
-              autoplay={{ 
-                delay: 5000,
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-                waitForTransition: true
-              }}
-              breakpoints={{
-                640: { 
-                  slidesPerView: 2,
-                  centeredSlides: false,
-                  spaceBetween: 20
-                },
-                1024: { 
-                  slidesPerView: 3,
-                  centeredSlides: false,
-                  spaceBetween: 25
-                },
-                1280: { 
-                  slidesPerView: 4,
-                  centeredSlides: false,
-                  spaceBetween: 30
-                }
-              }}
-              className="attractions-swiper"
-            >
-              {[
-                {
-                  image: "/images/zamak kulture.jpg",
-                  title: "Zamak Belimarković",
-                  description: "Zamak Belimarković, poznat i kao Dvorac kulture, predstavlja jedan od najznačajnijih kulturno-istorijskih spomenika Vrnjačke Banje. Izgrađen je 1888. godine u stilu italijanske renesanse."
-                },
-                {
-                  image: "/images/most ljubavi.jpg",
-                  title: "Most Ljubavi",
-                  description: "Most ljubavi je jedan od najromantičnijih simbola Vrnjačke Banje. Prema legendi, parovi koji zaključaju katanac na mostu i bace ključ u reku, zauvek će ostati zajedno."
-                },
-                {
-                  image: "/images/banjski park.jpg",
-                  title: "Banjski park",
-                  description: "Vrnjački park je živopisan prostor za druženje i zabavu koji objedinjuje prirodu, kulturu i istoriju, pružajući posetiocima mir i opuštanje među starim lipama i skulpturama."
-                },
-                {
-                  image: "/images/promenada.jpg",
-                  title: "Promenada",
-                  description: "Dugačka preko 2 km, predstavlja centralno mesto svih susreta u Vrnjačkoj Banji i obiluje udobnim mestima za predah na klupi ili osveženje u kafiću."
-                },
-                {
-                  image: "/images/japanski vrt.jpg",
-                  title: "Japanski vrt",
-                  description: "Japanski vrt u Vrnjačkoj Banji predstavlja mirno utočište sa kaskadnim vodopadima, drvenim mostićem i čajnom kućicom. Pruža spokojni ambijent za odmor u prirodi."
-                },
-                {
-                  image: "/images/izvor_sneznik_vrnjacka_banja.jpg",
-                  title: "Izvor Snežnik",
-                  description: "Jedan od najstarijih izvora mineralne vode u Vrnjačkoj Banji, Snežnik je poznat po svojoj lekovitoj vodi koja pomaže kod problema sa varenjem i metabolizmom."
-                },
-                {
-                  image: "/images/aqua-park-raj.jpg",
-                  title: "Aqua park",
-                  description: "Moderan vodeni kompleks sa brojnim bazenima i toboganima, idealan za porodičnu zabavu i osveženje tokom toplih letnjih dana."
-                }
-              ].map((attraction, index) => (
-                <SwiperSlide
-                  key={attraction.title}
-                  className="group relative overflow-hidden rounded-xl"
+                <div
+                  className={`mt-10 flex flex-col gap-4 sm:flex-row sm:items-center transition-all duration-1000 delay-300 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6'}`}
                 >
-                  <div className="bg-[#1A1614] border border-[#D4AF37]/20 rounded-xl transform transition-all duration-500 hover:scale-[1.02] hover:border-[#D4AF37]/40">
-                    {/* Image */}
-                    <div className="aspect-[3/4] overflow-hidden rounded-t-xl relative">
-                      <img 
-                        src={attraction.image} 
-                        alt={attraction.title}
-                        className="w-full h-full object-cover transform transition-all duration-500 group-hover:scale-110"
-                        loading="lazy"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-                    </div>
+                  <Link to="/properties" className="btn-royal">
+                    Pogledaj projekte
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <a
+                    href="#contact"
+                    className="btn-royal-outline border-cream-100 bg-cream-100 text-night hover:border-white hover:bg-white hover:text-night"
+                  >
+                    Zakaži razgledanje
+                  </a>
+                </div>
 
-                    {/* Content */}
-                    <div className="p-6 transform transition-all duration-500 group-hover:translate-y-[-4px]">
-                      <h3 
-                        className="text-xl text-[#D4AF37] mb-3"
-                        style={{ fontFamily: 'Playfair Display' }}
-                      >
-                        {attraction.title}
-                      </h3>
-                      <p className="text-cream-100/80 text-sm leading-relaxed transition-all duration-500 group-hover:text-cream-100">
-                        {attraction.description}
-                      </p>
-                    </div>
-                  </div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
-          </div>
-        </div>
-
-        {/* Contact Section */}
-        <div id="contact" className="relative py-16 overflow-hidden bg-gradient-to-b from-black via-[#2A2522] to-[#1A1614]">
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute inset-0 bg-[#F5E6D3]/5 mix-blend-overlay"></div>
-            <div 
-              className="absolute inset-0 opacity-5"
-              style={{
-                backgroundImage: `
-                  linear-gradient(45deg, #D4AF37 1px, transparent 1px),
-                  linear-gradient(-45deg, #D4AF37 1px, transparent 1px)
-                `,
-                backgroundSize: '40px 40px'
-              }}
-            ></div>
-          </div>
-
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            {/* Section Header */}
-            <div className="relative text-center mb-20">
-              <div className="flex items-center justify-center space-x-4 mb-6 scroll-animate">
-                <div className="w-16 h-px bg-gradient-to-r from-transparent to-[#D4AF37]/30"></div>
-                <span className="text-[#D4AF37] uppercase tracking-[0.2em] text-sm font-light">Kontakt</span>
-                <div className="w-16 h-px bg-gradient-to-l from-transparent to-[#D4AF37]/30"></div>
-              </div>
-              <h2 
-                className="text-5xl font-serif text-[#D4AF37] mb-6 scroll-animate delay-200" 
-                style={{ fontFamily: 'Playfair Display' }}
-              >
-                Kontaktirajte Nas
-              </h2>
-              <p className="text-cream-100/90 text-xl max-w-2xl mx-auto leading-relaxed scroll-animate delay-300">
-                Zainteresovani ste za neku od naših nekretnina? Pošaljite nam poruku i naš tim će vas kontaktirati u najkraćem mogućem roku.
-              </p>
-              <div className="w-24 h-px bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-6 scroll-animate delay-400"></div>
-            </div>
-
-            {/* Contact Information */}
-            <div className="grid md:grid-cols-2 gap-16 max-w-6xl mx-auto mt-20">
-              {/* Contact Information */}
-              <div className="space-y-8 scroll-animate from-left delay-500">
-                <div className="relative backdrop-blur-sm bg-gradient-to-br from-black/30 via-black/20 to-black/10 p-8 rounded-lg border border-[#D4AF37]/10">
-                  <div className="absolute -left-6 top-0 bottom-0 w-[2px] bg-gradient-to-b from-[#D4AF37]/0 via-[#D4AF37] to-[#D4AF37]/0"></div>
-                  <div className="space-y-8">
-                    <div>
-                      <h3 className="text-[#D4AF37] text-2xl mb-6" style={{ fontFamily: 'Playfair Display' }}>Informacije</h3>
-                      <div className="space-y-6">
-                        <div className="flex items-start space-x-4">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 rounded-full bg-[#D4AF37]/10 flex items-center justify-center">
-                              <Phone className="w-6 h-6 text-[#D4AF37]" />
-                            </div>
-                          </div>
-                          <div>
-                            <h4 className="text-[#D4AF37] text-lg mb-1">Telefon</h4>
-                            <p className="text-cream-100/80">
-                              <a href="tel:+381606112327" className="hover:text-[#D4AF37] transition-colors block">
-                                +381 60 611 2327
-                              </a>
-                              <a href="tel:+381642198443" className="hover:text-[#D4AF37] transition-colors block mt-1">
-                                +381 64 219 8443
-                              </a>
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start space-x-4">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 rounded-full bg-[#D4AF37]/10 flex items-center justify-center">
-                              <Mail className="w-6 h-6 text-[#D4AF37]" />
-                            </div>
-                          </div>
-                          <div>
-                            <h4 className="text-[#D4AF37] text-lg mb-1">Email</h4>
-                            <p className="text-cream-100/80">
-                              <a href="mailto:office@kraljresidence.rs" className="hover:text-[#D4AF37] transition-colors">
-                                office@kraljresidence.rs
-                              </a>
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="flex items-start space-x-4">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 rounded-full bg-[#D4AF37]/10 flex items-center justify-center">
-                              <MapPin className="w-6 h-6 text-[#D4AF37]" />
-                            </div>
-                          </div>
-                          <div>
-                            <h4 className="text-[#D4AF37] text-lg mb-1">Adresa</h4>
-                            <p className="text-cream-100/80">
-                              Kneza Miloša 6, Vrnjačka Banja<br />
-                              Srbija
-                            </p>
-                          </div>
-                        </div>
+                <div
+                  className={`mt-12 flex flex-wrap gap-x-10 gap-y-4 text-cream-100/80 transition-all duration-1000 delay-500 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-6'}`}
+                >
+                  {[
+                    ['30+', 'godina iskustva'],
+                    ['200+', 'stambenih jedinica'],
+                    ['10+', 'luksuznih objekata', true],
+                  ].map(([value, label, hideMobile]) => (
+                    <div key={label as string} className={hideMobile ? 'hidden sm:block' : ''}>
+                      <div className="heading text-ts-h4 text-gold" style={{ fontFamily: 'Playfair Display' }}>
+                        {value}
                       </div>
+                      <div className="text-sm uppercase tracking-wider">{label}</div>
                     </div>
-                  </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {showScrollIndicator && (
+            <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center text-cream-100/80">
+              <span className="mb-2 text-xs uppercase tracking-[0.2em]">Skrolujte</span>
+              <ChevronDown className="h-6 w-6 animate-bounce text-gold" />
+            </div>
+          )}
+        </header>
+
+        {/* ===================== ZGRADE NA POČETNOJ (iz admin panela) ===================== */}
+        {homeBuildings.length > 0 ? (
+          homeBuildings.map((b, i) => <HomeBuildingSection key={b.id} building={b} index={i} />)
+        ) : (
+          <>
+        {/* ===================== VILA V (novo, light) ===================== */}
+        <section className="section-light">
+          <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-20">
+            <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+              {/* Card LEFT */}
+              <div className="scroll-animate from-left order-1">
+                <ProjectCard data={vila5} className="bg-royal-sand border-gold/30" />
+              </div>
+
+              {/* Text RIGHT */}
+              <div className="scroll-animate from-right order-2">
+                <SectionHeading
+                  align="left"
+                  eyebrow="Kralj Residence Resort"
+                  title="Novogradnja stanova u Vrnjačkoj Banji"
+                />
+                <p className="mt-6 text-ts-p leading-relaxed text-royal-stone">
+                  Vila V je nastavak projekta Kralj Residence Resort, novogradnja u Vrnjačkoj Banji sa
+                  još jednim uređenim dvorištem i sopstvenim bazenom. Nastavljamo da gradimo luksuzne
+                  stanove za prodaju u srcu banje, sa istim kvalitetom i posvećenošću po kojima smo
+                  prepoznatljivi.
+                </p>
+                <p className="mt-4 text-ts-p leading-relaxed text-royal-stone">
+                  Direktna prodaja od investitora, savremen dizajn i mirna lokacija okružena zelenilom.
+                  {!vila5Available && ' Broj stanova i cene biće dostupni uskoro.'}
+                </p>
+                <div className="mt-10 flex flex-wrap items-center gap-4">
+                  {vila5Available && vila5.to && (
+                    <Link to={vila5.to} className="btn-royal">
+                      Ponuda stanova
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  )}
+                  <a href="tel:+381606112327" className="btn-royal-outline">
+                    <Phone className="h-4 w-4" />
+                    Pozovite za više informacija
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================== ROYAL AQUA (dark) ===================== */}
+        <section className="section-dark overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-[0.06]"
+            style={{
+              backgroundImage:
+                'linear-gradient(45deg,#C9A24A 1px,transparent 1px),linear-gradient(-45deg,#C9A24A 1px,transparent 1px)',
+              backgroundSize: '56px 56px',
+            }}
+          />
+          <div className="relative mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-20">
+            <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+              <div className="scroll-animate from-left">
+                <SectionHeading
+                  align="left"
+                  eyebrow="Royal Aqua"
+                  title="Novi stanovi u Vrnjačkoj Banji uz Aqua park"
+                  subtitle="27 ekskluzivnih stanova sa privatnim bazenom i uređenim dvorištem, na koraku od Aqua parka i centra Vrnjačke Banje."
+                />
+                <ul className="mt-8 grid grid-cols-2 gap-4 text-cream-100/80">
+                  {['Privatni bazen', 'Parking mesta', 'Uređeno dvorište', 'Ekskluzivna lokacija'].map((f) => (
+                    <li key={f} className="flex items-center text-ts-p">
+                      <span className="mr-3 inline-block h-1.5 w-1.5 rounded-full bg-gold" />
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-10 hidden flex-wrap gap-4 md:flex">
+                  <Link to="/royal-aqua" className="btn-royal">
+                    Ponuda stanova
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <a href="#contact" className="btn-royal-outline">Kontakt</a>
                 </div>
               </div>
 
-              {/* Contact Form */}
-              <div className="scroll-animate from-right delay-700">
-                <ContactForm onSuccess={() => setIsModalOpen(true)} /> {/* Prosledi callback */}
+              <div className="scroll-animate from-right w-full max-w-md justify-self-center lg:justify-self-end">
+                <ProjectCard data={royalAqua} variant="dark" />
               </div>
+            </div>
+          </div>
+        </section>
+          </>
+        )}
+
+        {/* ===================== IZDVAJAMO IZ PONUDE ===================== */}
+        <FeaturedApartments />
+
+        {/* ===================== RESORT (Vile I–IV, light) ===================== */}
+        <section className="section-sand">
+          <div className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
+            <SectionHeading
+              eyebrow="Kralj Residence Resort"
+              title="Stanovi u srcu Vrnjačke Banje"
+              subtitle="Četiri elegantne vile sa privatnim bazenima i sadržajima za porodični život."
+            />
+
+            <div className="mt-14 flex flex-col-reverse gap-6 sm:grid sm:grid-cols-2 lg:grid-cols-4">
+              {resortVillas.map((villa, i) => (
+                <div
+                  key={villa.name}
+                  className="scroll-animate from-bottom"
+                  style={{ transitionDelay: `${i * 80}ms` }}
+                >
+                  <ProjectCard data={villa} compact />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ===================== O NAMA (light) ===================== */}
+        <section id="about" ref={aboutSectionRef} className="section-light">
+          <div className="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+            <SectionHeading
+              eyebrow="O nama"
+              title={<>Tri decenije poverenja u<br />Vrnjačkoj Banji</>}
+            />
+
+            <div className="mt-16 grid items-center gap-14 lg:grid-cols-12">
+              <div className="scroll-animate from-left relative lg:col-span-7">
+                <div className="overflow-hidden rounded-xl2 shadow-royal">
+                  <img
+                    src="/images/hotel kralj slika.webp"
+                    alt="Kralj Residence — kompleks u Vrnjačkoj Banji"
+                    className="aspect-[4/3] w-full object-cover transition-transform duration-700 hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+                <div className="pointer-events-none absolute -bottom-5 -right-5 hidden h-24 w-24 rounded-tl-xl2 border-b-2 border-r-2 border-gold/50 md:block" />
+              </div>
+
+              <div className="scroll-animate from-right lg:col-span-5">
+                <h3 className="heading text-ts-h4 text-royal-ink" style={{ fontFamily: 'Playfair Display' }}>
+                  Kralj Residence
+                </h3>
+                <div className="mt-3 h-px w-16 bg-gold" />
+                <p className="mt-6 text-ts-p leading-relaxed text-royal-stone">
+                  Kralj Residence je porodična firma porodice Zekanović, koja već decenijama gradi
+                  poverenje u Vrnjačkoj Banji. Iza nas stoji Hotel Kralj, prisutan od 2008. godine,
+                  i dugogodišnje iskustvo u ugostiteljstvu, turizmu i gradnji nekretnina.
+                </p>
+                <p className="mt-4 text-ts-p leading-relaxed text-royal-stone">
+                  Danas smo jedan od vodećih investitora novogradnje u Vrnjačkoj Banji. Nudimo
+                  direktnu prodaju stanova od investitora, bez posrednika i provizije, uz vrhunski
+                  kvalitet gradnje, savremen dizajn i lokacije u samom srcu banje.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================== FILLER / CTA (braon) ===================== */}
+        <section className="relative overflow-hidden bg-royal-espresso text-cream-100">
+          <div className="mx-auto max-w-7xl px-6 py-16 md:px-10 md:py-20">
+            <div className="grid items-center gap-10 lg:grid-cols-12">
+              <div className="scroll-animate from-left lg:col-span-8">
+                <span className="inline-flex items-center gap-3 text-sm font-medium uppercase tracking-[0.2em] text-gold">
+                  Tu smo za vas
+                </span>
+                <h2
+                  className="heading mt-4 text-ts-h4 md:text-ts-h3"
+                  style={{ fontFamily: 'Playfair Display' }}
+                >
+                  Otvoreni smo za sva vaša pitanja
+                </h2>
+                <p className="mt-5 max-w-2xl text-ts-p leading-relaxed text-cream-100/75">
+                  Bilo da vas zanima kupovina stana u nekom od naših završenih projekata, dostupnost i
+                  cene u Vili IV i Royal Aqua kompleksu, ili detalji o novoj Vili V koja je uskoro u
+                  ponudi, tu smo da vam pomognemo. Naš tim vam rado izlazi u susret sa svim informacijama
+                  o novogradnji u Vrnjačkoj Banji, uslovima kupovine i mogućnostima plaćanja. Pozovite nas
+                  ili nam pišite, odgovaramo brzo i bez ikakve obaveze.
+                </p>
+              </div>
+
+              <div className="scroll-animate from-right flex lg:col-span-4 lg:justify-end">
+                <button
+                  type="button"
+                  className="btn-royal-outline border-gold/40 text-gold hover:border-gold hover:bg-gold hover:text-night"
+                >
+                  O projektu
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================== PARALLAX ===================== */}
+        <div className="relative h-[45vh] overflow-hidden bg-night">
+          <div
+            className="absolute inset-0 hidden bg-cover bg-center md:block"
+            style={{ backgroundImage: 'url("/images/Stan 17 S1.webp")', filter: 'brightness(0.55)', backgroundAttachment: 'fixed' }}
+          />
+          <div
+            className="absolute inset-0 bg-cover bg-center md:hidden"
+            style={{ backgroundImage: 'url("/images/Stan 17 S1.webp")', filter: 'brightness(0.55)' }}
+          />
+          <div className="absolute inset-0 flex items-center justify-center px-6 text-center">
+            <div className="scroll-animate">
+              <p className="heading text-ts-h4 text-cream-100 md:text-ts-h3" style={{ fontFamily: 'Playfair Display' }}>
+                Novogradnja u Vrnjačkoj Banji koja je više od mesta za život.
+              </p>
+              <a href="#contact" className="btn-royal mt-8">Kontaktirajte nas</a>
             </div>
           </div>
         </div>
 
-        {/* Footer */}
+        {/* ===================== ATRAKCIJE (light) ===================== */}
+        <section className="section-sand overflow-hidden">
+          <div className="mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+            <SectionHeading
+              eyebrow="Okruženje"
+              title="U srcu Vrnjačke Banje"
+              subtitle="Biser srpskog turizma na korak od vašeg doma. Najznačajnije atrakcije koje banju čine nezaboravnom."
+            />
+
+            <div className="mt-16">
+              <Swiper
+                modules={[SwiperNavigation, Pagination, Autoplay]}
+                spaceBetween={24}
+                slidesPerView={1}
+                loop
+                speed={800}
+                navigation
+                pagination={{ clickable: true }}
+                autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+                breakpoints={{
+                  640: { slidesPerView: 2 },
+                  1024: { slidesPerView: 3 },
+                  1280: { slidesPerView: 4 },
+                }}
+                className="attractions-swiper"
+              >
+                {ATTRACTIONS.map((a) => (
+                  <SwiperSlide key={a.title} className="group h-auto">
+                    <article className="card-royal h-full">
+                      <div className="relative aspect-[3/4] overflow-hidden">
+                        <img
+                          src={a.image}
+                          alt={`${a.title} — Vrnjačka Banja`}
+                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+                        <h3
+                          className="heading absolute bottom-4 left-5 right-5 text-ts-h6 text-cream-100"
+                          style={{ fontFamily: 'Playfair Display' }}
+                        >
+                          {a.title}
+                        </h3>
+                      </div>
+                      <div className="p-6">
+                        <p className="text-ts-p leading-relaxed text-royal-stone">{a.description}</p>
+                      </div>
+                    </article>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================== KONTAKT (dark) ===================== */}
+        <section id="contact" className="section-dark overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-[0.05]"
+            style={{
+              backgroundImage:
+                'linear-gradient(45deg,#C9A24A 1px,transparent 1px),linear-gradient(-45deg,#C9A24A 1px,transparent 1px)',
+              backgroundSize: '40px 40px',
+            }}
+          />
+          <div className="relative mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
+            <div className="grid gap-14 lg:grid-cols-2 lg:gap-20">
+              {/* LEFT — info */}
+              <div className="scroll-animate from-left">
+                <SectionHeading
+                  align="left"
+                  eyebrow="Kontakt"
+                  title="Razgovarajmo o vašem novom domu"
+                  subtitle="Zainteresovani ste za stan u Vrnjačkoj Banji? Pišite nam ili pozovite, odgovaramo brzo i bez ikakve obaveze."
+                />
+
+                <div className="mt-10 divide-y divide-gold/10 border-y border-gold/10">
+                  {[
+                    { icon: <Phone className="h-5 w-5" />, label: 'Telefon', value: '+381 60 611 2327', href: 'tel:+381606112327' },
+                    { icon: <Phone className="h-5 w-5" />, label: 'Telefon', value: '+381 60 611 2328', href: 'tel:+381606112328' },
+                    { icon: <Mail className="h-5 w-5" />, label: 'Email', value: 'office@kraljresidence.rs', href: 'mailto:office@kraljresidence.rs' },
+                    { icon: <MapPin className="h-5 w-5" />, label: 'Adresa', value: 'Kneza Miloša 6, Vrnjačka Banja' },
+                    { icon: <Clock className="h-5 w-5" />, label: 'Radno vreme', value: 'Ponedeljak – Nedelja, 09:00 – 20:00' },
+                  ].map((row, i) =>
+                    row.href ? (
+                      <a key={i} href={row.href} className="group flex items-center gap-4 py-4">
+                        <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gold/10 text-gold transition-colors duration-300 group-hover:bg-gold group-hover:text-night">
+                          {row.icon}
+                        </span>
+                        <span>
+                          <span className="block text-xs uppercase tracking-[0.16em] text-gold">{row.label}</span>
+                          <span className="block text-ts-h6 text-cream-100 transition-colors group-hover:text-gold">{row.value}</span>
+                        </span>
+                      </a>
+                    ) : (
+                      <div key={i} className="flex items-center gap-4 py-4">
+                        <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gold/10 text-gold">
+                          {row.icon}
+                        </span>
+                        <span>
+                          <span className="block text-xs uppercase tracking-[0.16em] text-gold">{row.label}</span>
+                          <span className="block text-ts-h6 text-cream-100">{row.value}</span>
+                        </span>
+                      </div>
+                    )
+                  )}
+                </div>
+              </div>
+
+              {/* RIGHT — form */}
+              <div className="scroll-animate from-right">
+                <div className="rounded-xl2 border border-gold/15 bg-royal-espresso p-7 shadow-royal md:p-10">
+                  <h3 className="heading text-ts-h5 text-cream-100" style={{ fontFamily: 'Playfair Display' }}>
+                    Pošaljite upit
+                  </h3>
+                  <p className="mt-2 text-ts-p text-cream-100/60">
+                    Popunite formu i javljamo vam se sa svim detaljima.
+                  </p>
+                  <div className="mt-7">
+                    <ContactForm onSuccess={() => setIsModalOpen(true)} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         <Footer />
         <CookieConsent />
         <ThankYouModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} autoCloseDelay={2000} />
@@ -950,4 +689,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

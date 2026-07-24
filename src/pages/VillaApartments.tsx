@@ -22,6 +22,7 @@ import ThankYouModal from '../components/ThankYouModal'; // Uvezi ThankYouModal
 import { useScroll } from '../hooks/useScroll';
 import { useParallax } from '../hooks/useParallax';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
+import { useSeo } from '../hooks/useSeo';
 
 const VillaApartments = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -32,6 +33,12 @@ const VillaApartments = () => {
   const { scrolled, showScrollIndicator, scrollPosition } = useScroll();
   const { calculateScale, calculateTextOpacity, calculateTextTransform } = useParallax(scrollPosition);
   useIntersectionObserver();
+  useSeo({
+    title: 'Vila III – stanovi Vrnjačka Banja | Kralj Residence',
+    description:
+      'Vila III – luksuzni stanovi u Vrnjačkoj Banji sa privatnim bazenom i parkingom. Novogradnja i direktna prodaja od investitora – Kralj Residence.',
+    path: '/villa-3',
+  });
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -57,7 +64,7 @@ const VillaApartments = () => {
       <div 
         className="fixed inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: `url("/images/vila3/Kralj k4 (1).png")`,
+          backgroundImage: `url("/images/vila3/Kralj k4 (1).webp")`,
           transform: `scale(${calculateScale()})`,
           filter: 'brightness(0.65)',
           transition: 'transform 0.5s ease-out'
@@ -82,7 +89,7 @@ const VillaApartments = () => {
             <div className="container-fluid px-8">
               <div className="max-w-2xl">
                 <h1 
-                  className={`text-5xl md:text-6xl text-[#D4AF37] mb-8 leading-none tracking-tight opacity-0 transform -translate-y-10 transition-all duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${isVisible ? 'opacity-100 translate-y-0' : ''}`}
+                  className={`text-4xl md:text-6xl text-[#D4AF37] mb-8 leading-none tracking-tight opacity-0 transform -translate-y-10 transition-all duration-[1500ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${isVisible ? 'opacity-100 translate-y-0' : ''}`}
                   style={{ fontFamily: 'Playfair Display' }}
                 >
                   Kralj Residence - Vila III
@@ -182,7 +189,7 @@ const VillaApartments = () => {
                 <div className="w-16 h-px bg-gradient-to-l from-transparent to-[#D4AF37]/30"></div>
               </div>
               <h2 
-                className="text-5xl font-serif text-[#D4AF37] mb-6 scroll-animate delay-200" 
+                className="text-4xl md:text-5xl font-serif text-[#D4AF37] mb-6 scroll-animate delay-200" 
                 style={{ fontFamily: 'Playfair Display' }}
               >
                 Kontaktirajte Nas
@@ -281,17 +288,17 @@ const VillaApartments = () => {
               selectedApartment.type
             }` : '',
             image: selectedApartment?.number === 22 ?
-              "/images/vila3/stan 22.png" :
+              "/images/vila3/stan 22.webp" :
               selectedApartment?.number === 23 ?
-              "/images/vila3/stan 23.png" :
+              "/images/vila3/stan 23.webp" :
               selectedApartment?.number === 24 ?
-              "/images/vila3/stan 24.png" :
+              "/images/vila3/stan 24.webp" :
               selectedApartment?.number === 25 ?
-              "/images/vila3/stan 25.png" :
+              "/images/vila3/stan 25.webp" :
               selectedApartment?.number === 26 ?
-              "/images/vila3/stan 26.png" :
+              "/images/vila3/stan 26.webp" :
               selectedApartment?.number === 27 ?
-              "/images/vila3/stan 27.png" :
+              "/images/vila3/stan 27.webp" :
               selectedApartment?.image || apartment.image,
             size: selectedApartment?.size || apartment.size,
             floor: selectedApartment ? getFloorName(selectedApartment.number) : apartment.floor,

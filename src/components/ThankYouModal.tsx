@@ -51,7 +51,7 @@ const ThankYouModal: React.FC<ThankYouModalProps> = ({ isOpen, onClose, autoClos
 
           {/* Logo */}
           <img 
-            src="https://res.cloudinary.com/duvwf75cx/image/upload/v1739196547/Beli_logo2_w2niz5.png"
+            src="https://res.cloudinary.com/duvwf75cx/image/upload/f_auto,q_auto,w_1920/v1739196547/Beli_logo2_w2niz5.png"
             alt="Kralj Residence Logo"
             className="h-16 mx-auto mb-6"
           />

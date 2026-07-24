@@ -1,32 +1,38 @@
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
-export const useIntersectionObserver = (threshold = 0.1, rootMargin = '50px') => {
+export const useIntersectionObserver = (threshold = 0.12, rootMargin = '0px 0px -8% 0px') => {
   const observerRef = useRef<IntersectionObserver | null>(null);
 
-  const handleIntersection = useCallback((entries: IntersectionObserverEntry[]) => {
-    entries.forEach(entry => {
-      const target = entry.target;
-      
-      requestAnimationFrame(() => {
-        target.style.opacity = entry.isIntersecting ? '' : '0';
-        target.classList[entry.isIntersecting ? 'add' : 'remove']('animate-in');
-      });
-    });
-  }, []);
-
   useEffect(() => {
-    if (observerRef.current) {
-      observerRef.current.disconnect();
-    }
+    observerRef.current?.disconnect();
 
-    observerRef.current = new IntersectionObserver(handleIntersection, { 
-      threshold,
-      rootMargin,
-    });
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in');
+            observerRef.current?.unobserve(entry.target);
+          }
+        }
+      },
+      { threshold, rootMargin }
+    );
 
-    const animatedElements = document.querySelectorAll('.scroll-animate');
-    animatedElements.forEach(el => observerRef.current?.observe(el));
+    const observeAll = () => {
+      document
+        .querySelectorAll('.scroll-animate:not(.animate-in)')
+        .forEach((el) => observerRef.current?.observe(el));
+    };
 
-    return () => observerRef.current?.disconnect();
-  }, [threshold, rootMargin, handleIntersection]);
+    observeAll();
+
+    // Sadržaj koji stiže naknadno (npr. iz baze) mora takođe da se registruje
+    const mutationObserver = new MutationObserver(observeAll);
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      mutationObserver.disconnect();
+      observerRef.current?.disconnect();
+    };
+  }, [threshold, rootMargin]);
 };
