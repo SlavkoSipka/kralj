@@ -13,6 +13,7 @@ import ThankYouModal from './components/ThankYouModal';
 import SectionHeading from './components/SectionHeading';
 import ProjectCard, { ProjectCardData } from './components/ProjectCard';
 import FeaturedApartments from './components/FeaturedApartments';
+import PanoramaSection from './components/PanoramaSection';
 import { useScroll } from './hooks/useScroll';
 import { useParallax } from './hooks/useParallax';
 import { useIntersectionObserver } from './hooks/useIntersectionObserver';
@@ -454,6 +455,9 @@ function App() {
             </div>
           </div>
         </section>
+
+        {/* ===================== 360° VIRTUELNI OBILAZAK ===================== */}
+        <PanoramaSection />
 
         {/* ===================== O NAMA (light) ===================== */}
         <section id="about" ref={aboutSectionRef} className="section-light">
