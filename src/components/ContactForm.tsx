@@ -4,9 +4,11 @@ import { Loader2 } from 'lucide-react';
 
 interface ContactFormProps {
   onSuccess: () => void; // Callback kada je poruka uspešno poslata
+  /** Početni tekst poruke (npr. za koji stan je upit) */
+  defaultMessage?: string;
 }
 
-const ContactForm: React.FC<ContactFormProps> = ({ onSuccess }) => {
+const ContactForm: React.FC<ContactFormProps> = ({ onSuccess, defaultMessage }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
@@ -64,6 +66,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSuccess }) => {
         <textarea
           rows={4}
           name="message"
+          defaultValue={defaultMessage}
           required
           className="input-royal resize-none"
           placeholder="Za koji projekat ste zainteresovani?"

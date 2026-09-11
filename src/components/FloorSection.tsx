@@ -14,10 +14,17 @@ interface FloorSectionProps {
     size: number | string;
     type: string;
   }>;
-  onSelectApartment: (apartment: any) => void;
+  /** Popup stana (stari projekti); izostaje kada kartica vodi na stranicu stana. */
+  onSelectApartment?: (apartment: any) => void;
   tone?: 'light' | 'sand';
   /** Dodatni props za karticu (slika/status iz baze) po stanu. */
-  resolveCard?: (apartment: any) => { imageSrc?: string; soldOverride?: boolean; outdoorLabel?: string };
+  resolveCard?: (apartment: any) => {
+    imageSrc?: string;
+    soldOverride?: boolean;
+    outdoorLabel?: string;
+    outdoorValue?: string;
+    href?: string;
+  };
 }
 
 const FloorSection: React.FC<FloorSectionProps> = ({ title, apartments, onSelectApartment, tone = 'light', resolveCard }) => {
@@ -50,7 +57,7 @@ const FloorSection: React.FC<FloorSectionProps> = ({ title, apartments, onSelect
                 <ApartmentCard
                   apartment={apartment}
                   floorName={title}
-                  onSelect={() => onSelectApartment(apartment)}
+                  onSelect={onSelectApartment ? () => onSelectApartment(apartment) : undefined}
                   {...(resolveCard ? resolveCard(apartment) : {})}
                 />
               </SwiperSlide>
@@ -65,7 +72,7 @@ const FloorSection: React.FC<FloorSectionProps> = ({ title, apartments, onSelect
               <ApartmentCard
                 apartment={apartment}
                 floorName={title}
-                onSelect={() => onSelectApartment(apartment)}
+                onSelect={onSelectApartment ? () => onSelectApartment(apartment) : undefined}
                 {...(resolveCard ? resolveCard(apartment) : {})}
               />
             </div>

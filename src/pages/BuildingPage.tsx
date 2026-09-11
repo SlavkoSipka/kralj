@@ -1,46 +1,35 @@
 import { useState, useEffect, useMemo, type ReactElement } from 'react';
-import { useParams, useSearchParams, Navigate } from 'react-router-dom';
-import { ChevronDown, Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { useParams, useSearchParams, useNavigate, Navigate } from 'react-router-dom';
+import { ChevronDown, Phone } from 'lucide-react';
 import { SAMPLE_APARTMENT } from '../constants';
-import ContactForm from '../components/ContactForm';
 import { useModal } from '../hooks/useModal';
 import Navigation from '../components/Navigation';
 import LoadingScreen from '../components/LoadingScreen';
 import Footer from '../components/Footer';
 import ApartmentModal from '../components/ApartmentModal';
 import FloorSection from '../components/FloorSection';
-import SectionHeading from '../components/SectionHeading';
+import ContactSection from '../components/ContactSection';
 import ThankYouModal from '../components/ThankYouModal';
 import { useScroll } from '../hooks/useScroll';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { useSeo } from '../hooks/useSeo';
-import { isSupabaseConfigured } from '../lib/supabase';
-import {
-  fetchBuildingBySlug,
-  fetchVisibleApartments,
-  type Building,
-  type ApartmentRow,
-} from '../lib/buildingsApi';
+import { apartmentPath, hasApartmentPages, type Building, type ApartmentRow } from '../lib/buildingsApi';
+import { loadBuildingData } from '../lib/buildingData';
 
 interface BuildingPageProps {
   /** Fiksni slug (za legacy rute /villa-4 itd.); ako izostane, čita se iz URL parametra. */
   slug?: string;
-  /** Šta prikazati kada Supabase nije konfigurisan ili zgrada ne postoji (legacy statička stranica). */
+  /** Šta prikazati kada zgrada nije dostupna iz baze (legacy statička stranica). */
   fallback?: ReactElement;
 }
-
-const CONTACT_ROWS = [
-  { icon: <Phone className="h-5 w-5" />, label: 'Telefon', value: '+381 60 611 2327', href: 'tel:+381606112327' },
-  { icon: <Phone className="h-5 w-5" />, label: 'Telefon', value: '+381 60 611 2328', href: 'tel:+381606112328' },
-  { icon: <Mail className="h-5 w-5" />, label: 'Email', value: 'office@kraljresidence.rs', href: 'mailto:office@kraljresidence.rs' },
-  { icon: <MapPin className="h-5 w-5" />, label: 'Adresa', value: 'Kneza Miloša 6, Vrnjačka Banja' },
-  { icon: <Clock className="h-5 w-5" />, label: 'Radno vreme', value: 'Ponedeljak – Nedelja, 09:00 – 20:00' },
-];
 
 const BuildingPage = ({ slug: slugProp, fallback }: BuildingPageProps) => {
   const params = useParams<{ slug: string }>();
   const slug = slugProp ?? params.slug ?? '';
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  /** Vila V i novi projekti: kartica vodi na stranicu stana. Stari projekti: popup. */
+  const apartmentPages = hasApartmentPages(slug);
 
   const [isVisible, setIsVisible] = useState(false);
   const [, setIsLoading] = useState(true);
@@ -64,29 +53,18 @@ const BuildingPage = ({ slug: slugProp, fallback }: BuildingPageProps) => {
   });
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
-      setState('missing');
-      return;
-    }
     let cancelled = false;
     setState('loading');
-    (async () => {
-      try {
-        const b = await fetchBuildingBySlug(slug);
-        if (cancelled) return;
-        if (!b || !b.visible) {
-          setState('missing');
-          return;
-        }
-        const apts = await fetchVisibleApartments(b.id);
-        if (cancelled) return;
-        setBuilding(b);
-        setApartments(apts);
-        setState('ready');
-      } catch {
-        if (!cancelled) setState('missing');
+    loadBuildingData(slug).then((data) => {
+      if (cancelled) return;
+      if (!data) {
+        setState('missing');
+        return;
       }
-    })();
+      setBuilding(data.building);
+      setApartments(data.apartments);
+      setState('ready');
+    });
     return () => {
       cancelled = true;
     };
@@ -99,12 +77,16 @@ const BuildingPage = ({ slug: slugProp, fallback }: BuildingPageProps) => {
     }
   }, [state]);
 
-  // Deep-link: /villa-4?stan=23 automatski otvara popup tog stana
+  // Deep-link: /villa-4?stan=23 otvara popup, a /vila-5?stan=12 vodi na stranicu stana
   useEffect(() => {
     if (state !== 'ready') return;
     const stanParam = searchParams.get('stan');
     if (!stanParam) return;
     const target = apartments.find((a) => a.number === parseInt(stanParam, 10));
+    if (target && apartmentPages) {
+      navigate(apartmentPath(slug, target.number), { replace: true });
+      return;
+    }
     if (target) {
       setSelected(target);
       open();
@@ -124,7 +106,8 @@ const BuildingPage = ({ slug: slugProp, fallback }: BuildingPageProps) => {
     return Array.from(map.entries()).map(([title, apts]) => ({ title, apartments: apts }));
   }, [apartments]);
 
-  if (state === 'missing') {
+  // Zgrada postoji u bazi, ali stanovi još nisu uneti: prikaži statičku stranicu ako postoji
+  if (state === 'missing' || (state === 'ready' && apartments.length === 0 && fallback)) {
     return fallback ?? <Navigate to="/properties" replace />;
   }
 
@@ -205,93 +188,55 @@ const BuildingPage = ({ slug: slugProp, fallback }: BuildingPageProps) => {
                 imageSrc: row.card_image_url ?? undefined,
                 soldOverride: row.sold,
                 outdoorLabel: row.outdoor_label,
+                outdoorValue: row.outdoor_value ?? undefined,
+                href: apartmentPages ? apartmentPath(slug, row.number) : undefined,
               };
             }}
-            onSelectApartment={(apt) => {
-              const row = floor.apartments.find((a) => a.id === apt.id);
-              if (row) {
-                setSelected(row);
-                open();
-              }
-            }}
+            onSelectApartment={
+              apartmentPages
+                ? undefined
+                : (apt) => {
+                    const row = floor.apartments.find((a) => a.id === apt.id);
+                    if (row) {
+                      setSelected(row);
+                      open();
+                    }
+                  }
+            }
           />
         ))}
       </div>
 
       {/* ===================== KONTAKT ===================== */}
-      <section id="contact" className="section-dark overflow-hidden">
-        <div className="relative mx-auto max-w-7xl px-6 py-24 md:px-10 md:py-32">
-          <div className="grid gap-14 lg:grid-cols-2 lg:gap-20">
-            <div className="scroll-animate from-left">
-              <SectionHeading
-                align="left"
-                eyebrow="Kontakt"
-                title={`Zainteresovani za stan u objektu ${building.name}?`}
-                subtitle="Pošaljite poruku ili pozovite, naš tim vam se javlja u najkraćem roku, bez ikakve obaveze."
-              />
-              <div className="mt-10 divide-y divide-gold/10 border-y border-gold/10">
-                {CONTACT_ROWS.map((row, i) =>
-                  row.href ? (
-                    <a key={i} href={row.href} className="group flex items-center gap-4 py-4">
-                      <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gold/10 text-gold transition-colors duration-300 group-hover:bg-gold group-hover:text-night">
-                        {row.icon}
-                      </span>
-                      <span>
-                        <span className="block text-xs uppercase tracking-[0.16em] text-gold">{row.label}</span>
-                        <span className="block text-ts-h6 text-cream-100 transition-colors group-hover:text-gold">{row.value}</span>
-                      </span>
-                    </a>
-                  ) : (
-                    <div key={i} className="flex items-center gap-4 py-4">
-                      <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gold/10 text-gold">
-                        {row.icon}
-                      </span>
-                      <span>
-                        <span className="block text-xs uppercase tracking-[0.16em] text-gold">{row.label}</span>
-                        <span className="block text-ts-h6 text-cream-100">{row.value}</span>
-                      </span>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-
-            <div className="scroll-animate from-right">
-              <div className="rounded-xl2 border border-gold/15 bg-royal-espresso p-7 shadow-royal md:p-10">
-                <h3 className="heading text-ts-h5 text-cream-100" style={{ fontFamily: 'Playfair Display' }}>
-                  Pošaljite upit
-                </h3>
-                <p className="mt-2 text-ts-p text-cream-100/60">Popunite formu i javljamo vam se sa svim detaljima.</p>
-                <div className="mt-7">
-                  <ContactForm onSuccess={() => setIsThankYouOpen(true)} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ContactSection
+        title={`Zainteresovani za stan u objektu ${building.name}?`}
+        onSuccess={() => setIsThankYouOpen(true)}
+      />
 
       <Footer />
 
-      <ApartmentModal
-        isOpen={isOpen}
-        onClose={() => {
-          close();
-          setSelected(null);
-        }}
-        objectName={building.name}
-        outdoorLabel={selected?.outdoor_label}
-        descriptionText={selected?.description ?? undefined}
-        apartment={{
-          ...SAMPLE_APARTMENT,
-          name: selected ? `Stan broj ${selected.number} · ${selected.type}` : '',
-          image: selected?.plan_image_url || selected?.card_image_url || SAMPLE_APARTMENT.image,
-          size: selected?.size_label || SAMPLE_APARTMENT.size,
-          number: selected?.number || 0,
-          floor: selected?.floor_name || SAMPLE_APARTMENT.floor,
-          status: selected ? (selected.sold ? 'Prodato' : 'Dostupno') : SAMPLE_APARTMENT.status,
-        }}
-      />
+      {!apartmentPages && (
+        <ApartmentModal
+          isOpen={isOpen}
+          onClose={() => {
+            close();
+            setSelected(null);
+          }}
+          objectName={building.name}
+          outdoorLabel={selected?.outdoor_label}
+          outdoorValue={selected?.outdoor_value ?? undefined}
+          descriptionText={selected?.description ?? undefined}
+          apartment={{
+            ...SAMPLE_APARTMENT,
+            name: selected ? `Stan broj ${selected.number} · ${selected.type}` : '',
+            image: selected?.plan_image_url || selected?.card_image_url || SAMPLE_APARTMENT.image,
+            size: selected?.size_label || SAMPLE_APARTMENT.size,
+            number: selected?.number || 0,
+            floor: selected?.floor_name || SAMPLE_APARTMENT.floor,
+            status: selected ? (selected.sold ? 'Prodato' : 'Dostupno') : SAMPLE_APARTMENT.status,
+          }}
+        />
+      )}
 
       <ThankYouModal isOpen={isThankYouOpen} onClose={() => setIsThankYouOpen(false)} autoCloseDelay={2000} />
     </div>

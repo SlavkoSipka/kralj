@@ -18,6 +18,10 @@ export const STATUS = {
   SOLD: 'Prodato',
 } as const;
 
+/** Podrazumevani opis stana (popup i stranica stana) kada opis nije unet u admin panelu */
+export const DEFAULT_APARTMENT_DESCRIPTION =
+  'Ovaj stan u Kralj Residence nudi savršen spoj funkcionalnosti i luksuza. Sa pažljivo osmišljenim rasporedom i kvalitetnim materijalima, predstavlja idealan izbor za vrhunski životni prostor u srcu Vrnjačke Banje.';
+
 // Apartment data
 export const SAMPLE_APARTMENT = {
   id: 1,

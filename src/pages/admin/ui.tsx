@@ -47,16 +47,22 @@ export const Toggle = ({
   </button>
 );
 
-/** Upload slike u Supabase Storage ili ručni unos URL-a. */
-export const ImageUpload = ({
-  value,
-  onChange,
-  folder,
-}: {
+interface UploadProps {
   value: string;
   onChange: (url: string) => void;
   folder: string;
-}) => {
+}
+
+/** Upload fajla u Supabase Storage ili ručni unos URL-a. */
+const UploadField = ({
+  value,
+  onChange,
+  folder,
+  accept,
+  buttonLabel,
+  placeholder,
+  preview,
+}: UploadProps & { accept: string; buttonLabel: string; placeholder: string; preview: ReactNode }) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
 
@@ -68,8 +74,8 @@ export const ImageUpload = ({
     try {
       const url = await uploadImage(file, folder);
       onChange(url);
-    } catch (err: any) {
-      setError(err?.message ?? 'Greška pri upload-u');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Greška pri upload-u');
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -78,20 +84,18 @@ export const ImageUpload = ({
 
   return (
     <div className="space-y-2">
-      {value && (
-        <img src={value} alt="Pregled" className="h-28 w-full rounded-lg border border-royal-ink/10 object-cover" />
-      )}
+      {value && preview}
       <div className="flex items-center gap-2">
         <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-gold/50 bg-gold/10 px-3.5 py-2 text-xs font-semibold uppercase tracking-wider text-gold-deep transition hover:bg-gold hover:text-royal-ink">
           {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
-          {uploading ? 'Upload...' : 'Otpremi sliku'}
-          <input type="file" accept="image/*" className="hidden" onChange={handleFile} disabled={uploading} />
+          {uploading ? 'Upload...' : buttonLabel}
+          <input type="file" accept={accept} className="hidden" onChange={handleFile} disabled={uploading} />
         </label>
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="ili nalepi URL / putanju slike"
+          placeholder={placeholder}
           className="flex-1 rounded-lg border border-royal-ink/15 bg-white px-3 py-2 text-xs text-royal-ink outline-none focus:border-gold"
         />
       </div>
@@ -99,3 +103,34 @@ export const ImageUpload = ({
     </div>
   );
 };
+
+/** Upload slike u Supabase Storage ili ručni unos URL-a. */
+export const ImageUpload = (props: UploadProps) => (
+  <UploadField
+    {...props}
+    accept="image/*"
+    buttonLabel="Otpremi sliku"
+    placeholder="ili nalepi URL / putanju slike"
+    preview={<img src={props.value} alt="Pregled" className="h-28 w-full rounded-lg border border-royal-ink/10 object-cover" />}
+  />
+);
+
+/** Upload PDF-a u Supabase Storage ili ručni unos URL-a. */
+export const FileUpload = (props: UploadProps) => (
+  <UploadField
+    {...props}
+    accept="application/pdf"
+    buttonLabel="Otpremi PDF"
+    placeholder="ili nalepi URL / putanju PDF-a"
+    preview={
+      <a
+        href={props.value}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex text-xs font-semibold uppercase tracking-wider text-gold-deep underline underline-offset-4 hover:text-gold"
+      >
+        Otvori trenutni PDF
+      </a>
+    }
+  />
+);

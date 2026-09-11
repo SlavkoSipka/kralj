@@ -72,6 +72,20 @@
     </image:image>
   </url>
 
+  <!-- Villa 5 Page -->
+  <url>
+    <loc>https://kraljresidence.rs/vila-5</loc>
+    <lastmod>2026-09-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="sr" href="https://kraljresidence.rs/vila-5" />
+    <image:image>
+      <image:loc>https://kraljresidence.rs/images/vila-5.webp</image:loc>
+      <image:title>Vila V stanovi za prodaju, Kralj Residence Vrnjačka Banja</image:title>
+      <image:caption>30 novih stanova u Vili V, novogradnja u Vrnjačkoj Banji</image:caption>
+    </image:image>
+  </url>
+
   <!-- Royal Aqua Page -->
   <url>
     <loc>https://kraljresidence.rs/royal-aqua</loc>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Building2 } from 'lucide-react';
 import SectionHeading from './SectionHeading';
 import { isSupabaseConfigured } from '../lib/supabase';
-import { fetchFeaturedApartments, buildingPath, type FeaturedApartment } from '../lib/buildingsApi';
+import { fetchFeaturedApartments, apartmentPath, type FeaturedApartment } from '../lib/buildingsApi';
 
 const FeaturedApartments = () => {
   const [apartments, setApartments] = useState<FeaturedApartment[]>([]);
@@ -28,7 +28,7 @@ const FeaturedApartments = () => {
 
         <div className="mt-14 grid gap-7 sm:grid-cols-2 lg:grid-cols-3">
           {apartments.map((a, i) => {
-            const href = `${buildingPath(a.buildings.slug)}?stan=${a.number}`;
+            const href = apartmentPath(a.buildings.slug, a.number);
             return (
               <div key={a.id} className="scroll-animate from-bottom" style={{ transitionDelay: `${(i % 3) * 80}ms` }}>
                 <Link to={href} className="block h-full" aria-label={`Stan ${a.number} — ${a.buildings.name}`}>

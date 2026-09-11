@@ -9,6 +9,7 @@ import Properties from './pages/Properties.tsx';
 import Location from './pages/Location.tsx';
 import VillaApartments from './pages/VillaApartments.tsx';
 import Villa4Apartments from './pages/Villa4Apartments.tsx';
+import ApartmentPage from './pages/ApartmentPage.tsx';
 import RoyalAquaApartments from './pages/RoyalAquaApartments.tsx';
 import CaseStudy from './pages/CaseStudy.tsx';
 import BuildingPage from './pages/BuildingPage.tsx';
@@ -51,8 +52,11 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/location" element={<Location />} />
           <Route path="/villa-3" element={<BuildingPage slug="villa-3" fallback={<VillaApartments />} />} />
           <Route path="/villa-4" element={<BuildingPage slug="villa-4" fallback={<Villa4Apartments />} />} />
+          <Route path="/vila-5" element={<BuildingPage slug="vila-5" />} />
+          <Route path="/vila-5/:apartment" element={<ApartmentPage slug="vila-5" />} />
           <Route path="/royal-aqua" element={<BuildingPage slug="royal-aqua" fallback={<RoyalAquaApartments />} />} />
           <Route path="/zgrada/:slug" element={<BuildingPage />} />
+          <Route path="/zgrada/:slug/:apartment" element={<ApartmentPage />} />
           <Route
             path="/admin"
             element={

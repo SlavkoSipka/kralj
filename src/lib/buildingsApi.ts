@@ -31,7 +31,11 @@ export interface ApartmentRow {
   floor_name: string;
   card_image_url: string | null;
   plan_image_url: string | null;
+  /** PDF osnova za stranicu stana */
+  pdf_url: string | null;
   outdoor_label: string;
+  /** Vrednost spoljnog prostora na kartici ("2.32 m²", "Ne"); null = "Da" */
+  outdoor_value: string | null;
   description: string | null;
   sold: boolean;
   visible: boolean;
@@ -47,10 +51,20 @@ export interface FeaturedApartment extends ApartmentRow {
 const LEGACY_ROUTES: Record<string, string> = {
   'villa-3': '/villa-3',
   'villa-4': '/villa-4',
+  'vila-5': '/vila-5',
   'royal-aqua': '/royal-aqua',
 };
 
 export const buildingPath = (slug: string) => LEGACY_ROUTES[slug] ?? `/zgrada/${slug}`;
+
+/** Stari projekti otvaraju stan u popup-u; Vila V i svi novi projekti imaju posebnu stranicu za svaki stan. */
+const POPUP_APARTMENT_BUILDINGS = new Set(['vila-1', 'vila-2', 'villa-3', 'villa-4', 'royal-aqua']);
+
+export const hasApartmentPages = (slug: string) => !POPUP_APARTMENT_BUILDINGS.has(slug);
+
+/** Link ka stanu: posebna stranica (/vila-5/stan-12) ili popup na stranici zgrade (/villa-4?stan=12) */
+export const apartmentPath = (slug: string, number: number) =>
+  hasApartmentPages(slug) ? `${buildingPath(slug)}/stan-${number}` : `${buildingPath(slug)}?stan=${number}`;
 
 // ---------- Javno čitanje ----------
 

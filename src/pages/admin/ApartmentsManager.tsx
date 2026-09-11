@@ -1,16 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Pencil, Trash2, ArrowLeft, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, ArrowLeft, X, ExternalLink } from 'lucide-react';
 import {
   type Building,
   type ApartmentRow,
+  apartmentPath,
+  hasApartmentPages,
   fetchAllApartments,
   insertApartment,
   updateApartment,
   deleteApartment,
 } from '../../lib/buildingsApi';
-import { Field, TextInput, TextArea, Select, Toggle, ImageUpload } from './ui';
+import { Field, TextInput, TextArea, Select, Toggle, ImageUpload, FileUpload } from './ui';
 
 const FLOOR_OPTIONS = [
+  'Suteren',
   'Nisko prizemlje',
   'Visoko prizemlje',
   'Prizemlje',
@@ -30,7 +33,9 @@ interface FormState {
   floor_name: string;
   card_image_url: string;
   plan_image_url: string;
+  pdf_url: string;
   outdoor_label: string;
+  outdoor_value: string;
   description: string;
   sold: boolean;
   visible: boolean;
@@ -44,7 +49,9 @@ const emptyForm: FormState = {
   floor_name: 'Prizemlje',
   card_image_url: '',
   plan_image_url: '',
+  pdf_url: '',
   outdoor_label: 'Terasa',
+  outdoor_value: '',
   description: '',
   sold: false,
   visible: true,
@@ -57,6 +64,8 @@ const ApartmentsManager = ({ building, onBack }: { building: Building; onBack: (
   const [form, setForm] = useState<FormState | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  /** Vila V i novi projekti imaju posebnu stranicu za svaki stan (stari projekti koriste popup) */
+  const apartmentPages = hasApartmentPages(building.slug);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -85,7 +94,9 @@ const ApartmentsManager = ({ building, onBack }: { building: Building; onBack: (
       floor_name: a.floor_name,
       card_image_url: a.card_image_url ?? '',
       plan_image_url: a.plan_image_url ?? '',
+      pdf_url: a.pdf_url ?? '',
       outdoor_label: a.outdoor_label,
+      outdoor_value: a.outdoor_value ?? '',
       description: a.description ?? '',
       sold: a.sold,
       visible: a.visible,
@@ -105,7 +116,9 @@ const ApartmentsManager = ({ building, onBack }: { building: Building; onBack: (
         floor_name: form.floor_name,
         card_image_url: form.card_image_url.trim() || null,
         plan_image_url: form.plan_image_url.trim() || null,
+        pdf_url: form.pdf_url.trim() || null,
         outdoor_label: form.outdoor_label,
+        outdoor_value: form.outdoor_value.trim() || null,
         description: form.description.trim() || null,
         sold: form.sold,
         visible: form.visible,
@@ -119,7 +132,12 @@ const ApartmentsManager = ({ building, onBack }: { building: Building; onBack: (
       setForm(null);
       load();
     } catch (err: any) {
-      setError(err?.message ?? 'Greška pri čuvanju');
+      const message: string = err?.message ?? 'Greška pri čuvanju';
+      setError(
+        message.includes('outdoor_value') || message.includes('pdf_url')
+          ? `${message}. Pokreni supabase/migration-vila5.sql u Supabase SQL Editoru.`
+          : message
+      );
     } finally {
       setSaving(false);
     }
@@ -191,6 +209,18 @@ const ApartmentsManager = ({ building, onBack }: { building: Building; onBack: (
                   labelOn="Vidljiv"
                   labelOff="Skriven"
                 />
+                {apartmentPages && (
+                  <a
+                    href={apartmentPath(building.slug, a.number)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-royal-ink/15 p-2 text-royal-stone transition hover:border-gold hover:text-gold-deep"
+                    aria-label="Otvori stranicu stana"
+                    title="Otvori stranicu stana"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                )}
                 <button
                   onClick={() => startEdit(a)}
                   className="rounded-full border border-royal-ink/15 p-2 text-royal-stone transition hover:border-gold hover:text-gold-deep"
@@ -258,6 +288,13 @@ const ApartmentsManager = ({ building, onBack }: { building: Building; onBack: (
                   <option value="Balkon">Balkon</option>
                 </Select>
               </Field>
+              <Field label="Spoljni prostor (vrednost na kartici)">
+                <TextInput
+                  value={form.outdoor_value}
+                  onChange={(e) => setForm({ ...form, outdoor_value: e.target.value })}
+                  placeholder="prazno = Da, ili Ne, ili 2.32 m²"
+                />
+              </Field>
               <Field label="Redosled prikaza">
                 <TextInput type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: e.target.value })} placeholder="isto kao broj stana" />
               </Field>
@@ -267,12 +304,19 @@ const ApartmentsManager = ({ building, onBack }: { building: Building; onBack: (
                 </Field>
               </div>
               <div className="sm:col-span-2">
-                <Field label="Slika tlocrta (popup)">
+                <Field label={apartmentPages ? 'Osnova stana (slika na stranici stana)' : 'Slika tlocrta (popup)'}>
                   <ImageUpload value={form.plan_image_url} onChange={(url) => setForm({ ...form, plan_image_url: url })} folder={`apartments/${building.slug}/plans`} />
                 </Field>
               </div>
+              {apartmentPages && (
+                <div className="sm:col-span-2">
+                  <Field label="PDF osnova (preuzimanje na stranici stana)">
+                    <FileUpload value={form.pdf_url} onChange={(url) => setForm({ ...form, pdf_url: url })} folder={`apartments/${building.slug}/pdf`} />
+                  </Field>
+                </div>
+              )}
               <div className="sm:col-span-2">
-                <Field label="Opis (popup, opciono)">
+                <Field label={apartmentPages ? 'Opis (stranica stana, opciono)' : 'Opis (popup, opciono)'}>
                   <TextArea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Ostavi prazno za podrazumevani tekst" />
                 </Field>
               </div>

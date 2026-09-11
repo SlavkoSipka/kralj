@@ -36,6 +36,7 @@ const BUILDINGS: Building[] = [
       apartments: 30,
       features: ['Privatni bazen', 'Uređeno dvorište', 'Parking'],
       status: 'Uskoro',
+      to: '/vila-5',
     },
     cardClassName: 'bg-royal-sand border-gold/30',
   },
@@ -138,7 +139,7 @@ const Properties = () => {
               apartments: b.total_apartments ?? 0,
               features: b.features,
               status: b.status,
-              to: b.status === 'Dostupno' ? buildingPath(b.slug) : undefined,
+              to: b.status !== 'Prodato' ? buildingPath(b.slug) : undefined,
             },
             cardClassName: b.status === 'Uskoro' ? 'bg-royal-sand border-gold/30' : undefined,
           }))
@@ -261,10 +262,27 @@ const Properties = () => {
 
                   <div className="mt-8 flex flex-wrap items-center gap-4">
                     {soon ? (
-                      <a href="tel:+381606112327" className="btn-royal">
-                        <Phone className="h-4 w-4" />
-                        Pozovite za informacije
-                      </a>
+                      <>
+                        {b.card.to && (
+                          <Link to={b.card.to} className="btn-royal">
+                            Pogledaj stanove
+                            <ArrowRight className="h-4 w-4" />
+                          </Link>
+                        )}
+                        <a
+                          href="tel:+381606112327"
+                          className={
+                            !b.card.to
+                              ? 'btn-royal'
+                              : reversed
+                              ? 'btn-royal-outline border-cream-100/40 text-cream-100 hover:bg-cream-100 hover:text-night'
+                              : 'btn-royal-outline'
+                          }
+                        >
+                          <Phone className="h-4 w-4" />
+                          Pozovite za informacije
+                        </a>
+                      </>
                     ) : sold ? (
                       <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.14em] text-royal-stone/70">
                         Rasprodato

@@ -2,7 +2,7 @@ import { memo, useEffect, useCallback, type MouseEvent } from 'react';
 import { X, ArrowRight } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { Apartment } from '../types';
-import { ANIMATION_DELAYS } from '../constants';
+import { ANIMATION_DELAYS, DEFAULT_APARTMENT_DESCRIPTION } from '../constants';
 
 interface ApartmentModalProps {
   isOpen: boolean;
@@ -14,12 +14,11 @@ interface ApartmentModalProps {
   outdoorLabel?: string;
   /** Opis stana; ako izostane, koristi se podrazumevani tekst. */
   descriptionText?: string;
+  /** Vrednost spoljnog prostora (npr. "2.32 m²" ili "Ne"); ako izostane, izvodi se iz hasBalcony. */
+  outdoorValue?: string;
 }
 
-const DEFAULT_DESCRIPTION =
-  'Ovaj stan u Kralj Residence nudi savršen spoj funkcionalnosti i luksuza. Sa pažljivo osmišljenim rasporedom i kvalitetnim materijalima, predstavlja idealan izbor za vrhunski životni prostor u srcu Vrnjačke Banje.';
-
-const ApartmentModal = memo(({ isOpen, onClose, apartment, objectName: objectNameProp, outdoorLabel, descriptionText }: ApartmentModalProps) => {
+const ApartmentModal = memo(({ isOpen, onClose, apartment, objectName: objectNameProp, outdoorLabel, descriptionText, outdoorValue }: ApartmentModalProps) => {
   const location = useLocation();
   const isVilla4 = location.pathname === '/villa-4';
   const isRoyal = location.pathname === '/royal-aqua';
@@ -97,7 +96,7 @@ const ApartmentModal = memo(({ isOpen, onClose, apartment, objectName: objectNam
                 ['Površina', typeof apartment.size === 'string' ? apartment.size : `${apartment.size} m²`],
                 ['Objekat', objectName],
                 ['Sprat', apartment.floor],
-                [areaLabel, apartment.hasBalcony ? 'Da' : 'Ne'],
+                [areaLabel, outdoorValue ?? (apartment.hasBalcony ? 'Da' : 'Ne')],
               ].map(([label, value]) => (
                 <div key={label} className="rounded-xl bg-royal-ink/[0.05] p-4">
                   <p className="text-xs uppercase tracking-wider text-gold-deep">{label}</p>
@@ -114,7 +113,7 @@ const ApartmentModal = memo(({ isOpen, onClose, apartment, objectName: objectNam
                 O stanu
               </h3>
               <p className="mt-3 text-ts-p leading-relaxed text-royal-stone">
-                {descriptionText || DEFAULT_DESCRIPTION}
+                {descriptionText || DEFAULT_APARTMENT_DESCRIPTION}
               </p>
             </div>
 

@@ -72,6 +72,7 @@ const VILA5: ProjectCardData = {
   apartments: 30,
   features: ['Privatni bazen', 'Uređeno dvorište', 'Parking'],
   status: 'Uskoro',
+  to: '/vila-5',
 };
 
 const ROYAL_AQUA: ProjectCardData = {
@@ -115,7 +116,7 @@ const HomeBuildingSection = ({ building, index }: { building: DbBuilding; index:
     apartments: building.total_apartments ?? 0,
     features: building.features,
     status: building.status,
-    to: available ? path : undefined,
+    to: available || soon ? path : undefined,
   };
 
   const sectionClass =
@@ -170,6 +171,10 @@ const HomeBuildingSection = ({ building, index }: { building: DbBuilding; index:
               </div>
             ) : soon ? (
               <div className="mt-10 flex flex-wrap items-center gap-4">
+                <Link to={path} className="btn-royal hidden md:inline-flex">
+                  Ponuda stanova
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
                 <a href="tel:+381606112327" className="btn-royal-outline">
                   <Phone className="h-4 w-4" />
                   Pozovite za više informacija
@@ -194,7 +199,7 @@ const mergeWithDb = (staticData: ProjectCardData, row?: DbBuilding): ProjectCard
     apartments: row.total_apartments ?? staticData.apartments,
     features: row.features.length ? row.features : staticData.features,
     status: row.status,
-    to: row.status === 'Dostupno' ? buildingPath(row.slug) : undefined,
+    to: row.status !== 'Prodato' ? buildingPath(row.slug) : undefined,
   };
 };
 
@@ -369,7 +374,7 @@ function App() {
                   {!vila5Available && ' Broj stanova i cene biće dostupni uskoro.'}
                 </p>
                 <div className="mt-10 flex flex-wrap items-center gap-4">
-                  {vila5Available && vila5.to && (
+                  {vila5.to && (
                     <Link to={vila5.to} className="btn-royal">
                       Ponuda stanova
                       <ArrowRight className="h-4 w-4" />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { ArrowRight, Lock } from 'lucide-react';
 import { isApartmentSold } from '../constants/apartmentAvailability';
 
@@ -11,13 +11,17 @@ interface ApartmentCardProps {
     type: string;
   };
   floorName: string;
-  onSelect: () => void;
+  onSelect?: () => void;
   /** Direktna slika (za zgrade iz baze); ako izostane, koristi se legacy mapiranje po ruti. */
   imageSrc?: string;
   /** Direktan status (za zgrade iz baze); ako izostane, koristi se legacy logika po ruti. */
   soldOverride?: boolean;
   /** Labela spoljnog prostora; ako izostane, izvodi se iz rute. */
   outdoorLabel?: string;
+  /** Vrednost spoljnog prostora (npr. "2.32 m²" ili "Ne"); podrazumevano "Da". */
+  outdoorValue?: string;
+  /** Stranica stana; kada postoji, kartica vodi na nju umesto da otvara popup. */
+  href?: string;
 }
 
 const royalImage = (n: number) => {
@@ -49,6 +53,8 @@ const ApartmentCard: React.FC<ApartmentCardProps> = ({
   imageSrc,
   soldOverride,
   outdoorLabel,
+  outdoorValue,
+  href,
 }) => {
   const { pathname } = useLocation();
   const sold = soldOverride ?? isApartmentSold(pathname, apartment.number);
@@ -73,6 +79,9 @@ const ApartmentCard: React.FC<ApartmentCardProps> = ({
     >
       {/* Image */}
       <div className="relative aspect-[4/3] overflow-hidden">
+        {href && !sold && (
+          <Link to={href} className="absolute inset-0 z-10" aria-label={`Pogledajte stan ${apartment.number}`} />
+        )}
         <img
           src={imgSrc}
           alt={`Kralj Residence — ${apartment.type} stan broj ${apartment.number} u Vrnjačkoj Banji`}
@@ -112,7 +121,7 @@ const ApartmentCard: React.FC<ApartmentCardProps> = ({
           {[
             ['Površina', typeof apartment.size === 'string' ? apartment.size : `${apartment.size} m²`],
             ['Sprat', floorName],
-            [areaLabel, 'Da'],
+            [areaLabel, outdoorValue ?? 'Da'],
           ].map(([label, value]) => (
             <div key={label} className="rounded-xl bg-royal-ink/[0.04] p-3 text-center">
               <p className="text-xs uppercase tracking-wider text-gold-deep">{label}</p>
@@ -126,6 +135,11 @@ const ApartmentCard: React.FC<ApartmentCardProps> = ({
         <div className="mt-auto pt-6">
           {sold ? (
             <span className="chip-status chip-sold w-full justify-center py-2.5">Prodato</span>
+          ) : href ? (
+            <Link to={href} className="btn-royal w-full">
+              Pogledajte stan
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           ) : (
             <button onClick={onSelect} className="btn-royal w-full">
               Pogledajte stan

@@ -177,15 +177,15 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ data, variant = 'light', comp
 
         {/* CTA */}
         <div className="mt-auto pt-7">
-          {soon ? (
-            <span className="chip-status chip-soon">Uskoro u prodaji</span>
-          ) : sold || !data.to ? (
-            <span className="chip-status chip-sold">Prodato</span>
-          ) : (
+          {data.to && !sold ? (
             <Link to={data.to} className="btn-royal w-full">
               Ponuda stanova
               <ArrowRight className="h-4 w-4" />
             </Link>
+          ) : soon ? (
+            <span className="chip-status chip-soon">Uskoro u prodaji</span>
+          ) : (
+            <span className="chip-status chip-sold">Prodato</span>
           )}
         </div>
       </div>
