@@ -1,0 +1,13 @@
+# Normalizacija prelaza u novi red: u repou uvek LF, u radnom folderu po platformi.
+* text=auto
+
+# Binarni fajlovi: bez diff-a i bez diranja prelaza u novi red.
+*.webp  binary
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.ico   binary
+*.psd   binary
+*.pdf   binary
+*.mp4   binary
+*.insp  binary

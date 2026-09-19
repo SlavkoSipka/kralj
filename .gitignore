@@ -33,3 +33,9 @@ vite.config.ts.timestamp-*
 
 # OS
 Thumbs.db
+
+# Sirovi medijski materijal (Insta360 .insp i originalni dron snimci).
+# Ne ide u git: oko 2.2 GB, a GitHub odbija fajlove preko 100 MB.
+# Cuva se lokalno i na eksternom disku. Web verzije su u public/images/360/panorame
+# i public/videos, i one JESU u gitu.
+_raw-media/
