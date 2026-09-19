@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
-import { Move } from 'lucide-react';
+import { Map as MapIcon, Move } from 'lucide-react';
 import SectionHeading from './SectionHeading';
 import { PANORAMA_MAP_IMAGE, PANORAMA_HOTSPOTS } from '../constants/panoramas';
 
@@ -12,151 +12,174 @@ const Spinner = () => (
 );
 
 /**
- * Virtuelni obilazak dvorišta: mapa odozgo sa tačkama i 360° plejer pored nje.
- * Klik na tačku menja sliku u plejeru.
+ * Plejer (biblioteka od oko 600 KB) i prva panorama počinju da se učitavaju čim se stranica učita,
+ * pa su spremni dok se stigne do sekcije, a ne usporavaju prvi prikaz stranice.
+ */
+const usePageLoaded = () => {
+  const [loaded, setLoaded] = useState(() => document.readyState === 'complete');
+  useEffect(() => {
+    if (loaded) return;
+    const onLoad = () => setLoaded(true);
+    window.addEventListener('load', onLoad, { once: true });
+    return () => window.removeEventListener('load', onLoad);
+  }, [loaded]);
+  return loaded;
+};
+
+const ALL_IMAGES = PANORAMA_HOTSPOTS.map((h) => h.image);
+
+/** Skrol do elementa tako da ga fiksni meni ne prekrije (meni je 64 px, od 768 px širine 80 px) */
+const scrollBelowNav = (el: HTMLElement | null) => {
+  if (!el) return;
+  const nav = window.innerWidth >= 768 ? 80 : 64;
+  window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - nav, behavior: 'smooth' });
+};
+
+/**
+ * Virtuelni obilazak dvorišta: velika mapa sa numerisanim tačkama, a ispod 360° plejer preko cele
+ * širine ekrana. Klik na tačku je osvetli, otvori njenu sliku u plejeru i spusti stranicu do plejera.
  */
 const PanoramaSection = () => {
-  const [activeId, setActiveId] = useState(PANORAMA_HOTSPOTS[0]?.id);
-  const [nearView, setNearView] = useState(false);
-  const sectionRef = useRef<HTMLElement>(null);
+  const [active, setActive] = useState(0);
+  const [dragged, setDragged] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<HTMLDivElement>(null);
+  const pageLoaded = usePageLoaded();
 
-  // Plejer (biblioteka od oko 600 KB) se učitava tek kada je sekcija blizu ekrana
-  useEffect(() => {
-    const el = sectionRef.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setNearView(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: '400px 0px' }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+  const total = PANORAMA_HOTSPOTS.length;
+  if (total === 0) return null;
 
-  if (PANORAMA_HOTSPOTS.length === 0) return null;
-
-  const active = PANORAMA_HOTSPOTS.find((h) => h.id === activeId) ?? PANORAMA_HOTSPOTS[0];
-  const activeNumber = PANORAMA_HOTSPOTS.indexOf(active) + 1;
+  const current = PANORAMA_HOTSPOTS[active];
+  const openFromMap = (i: number) => {
+    setActive(i);
+    scrollBelowNav(playerRef.current);
+  };
 
   return (
-    <section ref={sectionRef} className="section-dark overflow-hidden">
-      <div className="relative mx-auto max-w-[1400px] px-6 py-16 md:px-10 md:py-24">
+    <section className="section-dark overflow-hidden">
+      <div className="mx-auto max-w-[1400px] px-4 pt-16 sm:px-6 md:px-10 md:pt-24">
         <SectionHeading
           eyebrow="Virtuelni obilazak"
           title="Prošetajte dvorištem u 360°"
-          subtitle="Izaberite tačku na mapi i okrećite pogled kao da stojite u dvorištu Kralj Residence."
+          subtitle="Kliknite na broj na mapi i pogledajte to mesto u 360°. Pogled okrećete prevlačenjem."
         />
 
-        <div className="mt-12 grid items-start gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-8">
-          {/* 360 plejer */}
-          <div className="relative overflow-hidden rounded-xl2 border border-gold/25 bg-night shadow-royal lg:order-2">
-            <div className="aspect-[4/3] sm:aspect-[16/10]">
-              {active.image ? (
-                nearView ? (
-                  <Suspense fallback={<Spinner />}>
-                    <PanoramaViewer image={active.image} />
-                  </Suspense>
-                ) : (
-                  <Spinner />
-                )
-              ) : (
-                <div className="relative flex h-full flex-col items-center justify-center gap-3 px-6 text-center">
-                  <div
-                    className="absolute inset-0 scale-110 bg-cover bg-center opacity-25 blur-sm"
-                    style={{ backgroundImage: `url("${PANORAMA_MAP_IMAGE}")` }}
-                  />
-                  <span className="relative flex h-14 w-14 items-center justify-center rounded-full border border-gold/50 text-sm font-semibold text-gold">
-                    360°
-                  </span>
-                  <p className="heading relative text-ts-h6 text-cream-100" style={{ fontFamily: 'Playfair Display' }}>
-                    360° snimak ove tačke stiže uskoro
-                  </p>
-                  <p className="relative text-sm uppercase tracking-[0.16em] text-cream-100/60">{active.label}</p>
-                </div>
-              )}
-            </div>
+        {/* Velika mapa sa tačkama */}
+        <div ref={mapRef} className="relative mt-10 overflow-hidden rounded-xl2 border border-gold/25 shadow-royal md:mt-12">
+          <img
+            src={PANORAMA_MAP_IMAGE}
+            alt="Kralj Residence, dvorište iz ptičije perspektive sa tačkama 360° obilaska"
+            className="block h-auto w-full"
+            width={1287}
+            height={816}
+            loading="lazy"
+            decoding="async"
+          />
 
-            {/* Trenutna tačka */}
-            <div className="pointer-events-none absolute left-3 top-3 z-10 flex items-center gap-2 rounded-full bg-night/85 px-4 py-2 backdrop-blur md:left-4 md:top-4">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-gold">Tačka {activeNumber}</span>
-              <span className="text-sm text-cream-100">{active.label}</span>
-            </div>
-
-            {active.image && (
-              <p className="pointer-events-none absolute bottom-14 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-night/75 px-4 py-1.5 text-[11px] uppercase tracking-[0.16em] text-cream-100/85 backdrop-blur">
-                <Move className="h-3.5 w-3.5 text-gold" />
-                Prevucite da okrenete pogled
-              </p>
-            )}
-          </div>
-
-          {/* Mapa odozgo sa tačkama */}
-          <div className="lg:order-1">
-            <div className="relative overflow-hidden rounded-xl2 border border-gold/25 shadow-royal">
-              <img
-                src={PANORAMA_MAP_IMAGE}
-                alt="Kralj Residence, dvorište iz ptičije perspektive"
-                className="block h-auto w-full"
-                width={1287}
-                height={816}
-                loading="lazy"
-                decoding="async"
-              />
-
-              {PANORAMA_HOTSPOTS.map((h, i) => {
-                const isActive = h.id === active.id;
-                return (
-                  <button
-                    key={h.id}
-                    type="button"
-                    onClick={() => setActiveId(h.id)}
-                    aria-label={`360 pogled: ${h.label}`}
-                    aria-pressed={isActive}
-                    className="group absolute -translate-x-1/2 -translate-y-1/2"
-                    style={{ left: `${h.x}%`, top: `${h.y}%` }}
-                  >
-                    {isActive && <span className="absolute inset-0 animate-ping rounded-full bg-gold/60" />}
-                    <span
-                      className={`relative flex h-8 w-8 items-center justify-center rounded-full border-2 text-sm font-bold shadow-lg transition-all duration-300 md:h-9 md:w-9 ${
-                        isActive
-                          ? 'scale-110 border-cream-100 bg-gold text-night'
-                          : 'border-gold bg-night/80 text-gold group-hover:scale-110 group-hover:bg-gold group-hover:text-night'
-                      }`}
-                    >
-                      {i + 1}
-                    </span>
-                    <span className="pointer-events-none absolute left-1/2 top-full mt-2 hidden -translate-x-1/2 whitespace-nowrap rounded-full bg-night/90 px-3 py-1.5 text-xs uppercase tracking-wider text-cream-100 opacity-0 shadow-lg backdrop-blur transition-opacity duration-300 group-hover:opacity-100 md:block">
-                      {h.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Spisak tačaka, lakši za dodir na telefonu */}
-            <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-              {PANORAMA_HOTSPOTS.map((h, i) => (
-                <button
-                  key={h.id}
-                  type="button"
-                  onClick={() => setActiveId(h.id)}
-                  className={`flex items-center gap-2 rounded-full border px-3.5 py-2 text-left text-xs uppercase tracking-wider transition ${
-                    h.id === active.id
-                      ? 'border-gold bg-gold text-night'
-                      : 'border-gold/30 text-cream-100/80 hover:border-gold hover:text-gold'
+          {PANORAMA_HOTSPOTS.map((h, i) => {
+            const isActive = i === active;
+            return (
+              <button
+                key={h.id}
+                type="button"
+                onClick={() => openFromMap(i)}
+                aria-label={`Otvori 360° pogled, tačka ${h.number}`}
+                aria-pressed={isActive}
+                className={`group absolute -translate-x-1/2 -translate-y-1/2 ${isActive ? 'z-20' : 'z-10'}`}
+                style={{ left: `${h.x}%`, top: `${h.y}%` }}
+              >
+                {isActive && <span className="absolute inset-0 animate-ping rounded-full bg-gold/60" />}
+                <span
+                  className={`relative flex h-6 w-6 items-center justify-center rounded-full border-2 text-[11px] font-bold transition-all duration-300 sm:h-9 sm:w-9 sm:text-sm lg:h-11 lg:w-11 lg:text-base ${
+                    isActive
+                      ? 'scale-110 border-cream-100 bg-gold text-night shadow-[0_0_24px_6px_rgba(201,162,74,0.75)]'
+                      : 'border-gold bg-night/85 text-gold shadow-lg group-hover:scale-110 group-hover:bg-gold group-hover:text-night'
                   }`}
                 >
-                  <span className="font-bold">{i + 1}</span>
-                  <span className="truncate">{h.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
+                  {h.number}
+                </span>
+              </button>
+            );
+          })}
         </div>
+
+        {/* Na telefonu su tačke na mapi sitne i neke blizu, pa ispod mape stoje i kao dugmad */}
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2 sm:hidden">
+          {PANORAMA_HOTSPOTS.map((h, i) => (
+            <button
+              key={h.id}
+              type="button"
+              onClick={() => openFromMap(i)}
+              aria-label={`Otvori 360° pogled, tačka ${h.number}`}
+              className={`flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold transition ${
+                i === active ? 'border-cream-100 bg-gold text-night' : 'border-gold/60 text-gold'
+              }`}
+            >
+              {h.number}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/*
+        360 plejer preko cele širine ekrana. Na računaru je visok ceo ekran ispod menija; na telefonu je
+        niži, jer prevlačenje prstom po plejeru okreće pogled i ne skroluje stranicu.
+      */}
+      <div
+        ref={playerRef}
+        className="relative mt-8 h-[62svh] min-h-[340px] w-full bg-night md:mt-12 md:h-[calc(100svh-5rem)] md:min-h-[420px]"
+        onPointerDown={() => setDragged(true)}
+      >
+        {pageLoaded ? (
+          <Suspense fallback={<Spinner />}>
+            <PanoramaViewer image={current.image} preload={ALL_IMAGES} />
+          </Suspense>
+        ) : (
+          <Spinner />
+        )}
+
+        {/* Gore: trenutna tačka i povratak na mapu */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between gap-3 bg-gradient-to-b from-black/60 to-transparent p-3 md:p-5">
+          <div className="flex items-center gap-2 rounded-full bg-night/85 px-4 py-2 backdrop-blur">
+            <span className="hidden text-[11px] font-semibold uppercase tracking-[0.18em] text-gold sm:inline">360° pogled</span>
+            <span className="heading text-sm text-cream-100 md:text-base" style={{ fontFamily: 'Playfair Display' }}>
+              Tačka {current.number}
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => scrollBelowNav(mapRef.current)}
+            className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-night/85 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.16em] text-gold backdrop-blur transition hover:bg-night"
+          >
+            <MapIcon className="h-4 w-4" />
+            Mapa
+          </button>
+        </div>
+
+        {/* Brojevi tačaka */}
+        <div className="absolute bottom-14 left-1/2 z-10 flex -translate-x-1/2 gap-1 rounded-full bg-night/80 p-1.5 backdrop-blur md:bottom-16 md:gap-1.5">
+          {PANORAMA_HOTSPOTS.map((h, i) => (
+            <button
+              key={h.id}
+              type="button"
+              onClick={() => setActive(i)}
+              aria-label={`Tačka ${h.number}`}
+              aria-pressed={i === active}
+              className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition md:h-9 md:w-9 md:text-sm ${
+                i === active ? 'bg-gold text-night' : 'text-cream-100/80 hover:bg-gold/20 hover:text-gold'
+              }`}
+            >
+              {h.number}
+            </button>
+          ))}
+        </div>
+
+        {!dragged && (
+          <p className="pointer-events-none absolute bottom-28 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap rounded-full bg-night/75 px-4 py-1.5 text-[11px] uppercase tracking-[0.16em] text-cream-100/85 backdrop-blur md:bottom-32">
+            <Move className="h-3.5 w-3.5 text-gold" />
+            Prevucite da okrenete pogled
+          </p>
+        )}
       </div>
     </section>
   );
