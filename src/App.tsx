@@ -28,8 +28,8 @@ import 'swiper/css/pagination';
 
 /** Hero na telefonu: vertikalni dron snimci kompleksa, prvo hero pa solid, ukrug */
 const MOBILE_HERO_VIDEOS = ['/videos/hero.mp4', '/videos/solid.mp4'];
-/** Hero na računaru: isečak horizontalnog dron snimka od 4:22 do kraja, ukrug */
-const DESKTOP_HERO_VIDEOS = ['/videos/hero-horizontal.mp4'];
+/** Hero na računaru: isečci horizontalnog dron snimka, prvo 2:00 do 2:26 pa 4:22 do kraja, ukrug */
+const DESKTOP_HERO_VIDEOS = ['/videos/hero-horizontal-1.mp4', '/videos/hero-horizontal-2.mp4'];
 
 const LOADING_DELAY = 900;
 
@@ -266,7 +266,7 @@ function App() {
           {isMobile ? (
             <HeroVideo key="mobile" videos={MOBILE_HERO_VIDEOS} poster="/videos/posteri/hero.webp" />
           ) : (
-            <HeroVideo key="desktop" videos={DESKTOP_HERO_VIDEOS} poster="/videos/posteri/hero-horizontal.webp" />
+            <HeroVideo key="desktop" videos={DESKTOP_HERO_VIDEOS} poster="/videos/posteri/hero-horizontal-1.webp" />
           )}
 
           {/* Scrim for legibility */}
