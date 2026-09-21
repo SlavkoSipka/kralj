@@ -261,16 +261,6 @@
   .counter.animate {
     animation: countUp 2s ease-out forwards;
   }
-
-  /* Pozadinska hero slika — uvek popunjava ekran, bez prelivanja van viewporta */
-  .background-slideshow-image {
-    object-fit: cover !important;
-    object-position: center !important;
-    width: 100% !important;
-    height: 100% !important;
-    max-width: 100% !important;
-    transform-origin: center !important;
-  }
 }
 
 /* Villas scroll container */

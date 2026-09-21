@@ -113,9 +113,9 @@ create policy "auth delete images" on storage.objects
 -- ---------- SEED: ZGRADE ----------
 
 insert into public.buildings (slug, name, eyebrow, description, image_url, size_label, features, status, visible, sort_order, total_apartments) values
-  ('vila-5', 'Vila V', 'Novo · Uskoro u ponudi',
-   'Nastavak projekta Kralj Residence Resort. Novo uređeno dvorište, sopstveni bazen i 30 luksuznih stanova. Novogradnja u Vrnjačkoj Banji koja stiže uskoro.',
-   '/images/vila-5.webp', '1400 m²', array['Privatni bazen', 'Uređeno dvorište', 'Parking'], 'Uskoro', true, 1, 30),
+  ('vila-5', 'Vila V', 'Novo · Počela prodaja',
+   'Nastavak projekta Kralj Residence Resort. Novo uređeno dvorište, sopstveni bazen i 30 luksuznih stanova. Prodaja je počela, direktno od investitora.',
+   '/images/vila-5.webp', '1400 m²', array['Privatni bazen', 'Uređeno dvorište', 'Parking'], 'Dostupno', true, 1, 30),
   ('royal-aqua', 'Royal Aqua', 'U prodaji',
    'Ekskluzivni stambeni kompleks sa privatnim bazenom, uređenim dvorištem i parkingom. 27 stanova na koraku od Aqua parka i centra Vrnjačke Banje.',
    '/images/Rudjinci A2.webp', '1500 m²', array['Privatni bazen', 'Uređeno dvorište', 'Ekskluzivna lokacija'], 'Dostupno', true, 2, 27),

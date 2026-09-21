@@ -11,10 +11,24 @@ import FloorSection from '../components/FloorSection';
 import ContactSection from '../components/ContactSection';
 import ThankYouModal from '../components/ThankYouModal';
 import { useScroll } from '../hooks/useScroll';
+import HeroVideo from '../components/HeroVideo';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useSeo } from '../hooks/useSeo';
 import { apartmentPath, hasApartmentPages, type Building, type ApartmentRow } from '../lib/buildingsApi';
 import { loadBuildingData } from '../lib/buildingData';
+
+type HeroVideoSource = { videos: string[]; poster: string };
+
+/** Hero video po zgradi: vertikalni za telefon, horizontalni za računar; bez videa ostaje slika zgrade */
+const HERO_VIDEOS: Record<string, { mobile?: HeroVideoSource; desktop?: HeroVideoSource }> = {
+  'vila-5': {
+    // druga polovina snimka "hero vila 5", ponavlja se
+    mobile: { videos: ['/videos/hero-vila-5.mp4'], poster: '/videos/posteri/hero-vila-5.webp' },
+    // isečak 3:15 do 3:33 iz snimka "horizontal", ponavlja se
+    desktop: { videos: ['/videos/hero-vila-5-horizontal.mp4'], poster: '/videos/posteri/hero-vila-5-horizontal.webp' },
+  },
+};
 
 interface BuildingPageProps {
   /** Fiksni slug (za legacy rute /villa-4 itd.); ako izostane, čita se iz URL parametra. */
@@ -40,6 +54,8 @@ const BuildingPage = ({ slug: slugProp, fallback }: BuildingPageProps) => {
   const [isThankYouOpen, setIsThankYouOpen] = useState(false);
   const { isOpen, open, close } = useModal();
   const { scrolled, showScrollIndicator } = useScroll();
+  const isMobile = useMediaQuery('(max-width: 767px)');
+  const heroVideo = HERO_VIDEOS[slug]?.[isMobile ? 'mobile' : 'desktop'];
   useIntersectionObserver();
 
   useSeo({
@@ -128,10 +144,14 @@ const BuildingPage = ({ slug: slugProp, fallback }: BuildingPageProps) => {
 
       {/* ===================== HERO ===================== */}
       <header className="relative flex min-h-[75vh] items-center">
-        <div
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url("${building.image_url ?? '/images/Rudjinci A1.webp'}")` }}
-        />
+        {heroVideo ? (
+          <HeroVideo key={heroVideo.poster} videos={heroVideo.videos} poster={heroVideo.poster} />
+        ) : (
+          <div
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url("${building.image_url ?? '/images/Rudjinci A1.webp'}")` }}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/40 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-t from-night/60 via-transparent to-black/20" />
 

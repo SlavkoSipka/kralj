@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, Download, ExternalLink, Phone } from 'lucide-react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { Link, Navigate, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, Check, Download, Phone, X, ZoomIn } from 'lucide-react';
 import Navigation from '../components/Navigation';
 import Footer from '../components/Footer';
 import ContactSection from '../components/ContactSection';
@@ -93,11 +93,94 @@ const SimilarCard = ({ apartment, href }: { apartment: ApartmentRow; href: strin
   </Link>
 );
 
+/**
+ * Osnova stana preko celog ekrana, unutar sajta. Ranije se PDF otvarao u novom tabu, iz kog na
+ * telefonu nema povratka dugmetom Nazad; ovde Nazad, X i Esc zatvaraju prikaz.
+ */
+const PlanLightbox = ({
+  src,
+  title,
+  pdf,
+  onClose,
+}: {
+  src: string;
+  title: string;
+  pdf: string | null;
+  onClose: () => void;
+}) => {
+  const [zoomed, setZoomed] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onClose]);
+
+  return (
+    <div className="fixed inset-0 z-[130] flex flex-col bg-night/95 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={title}>
+      <div className="flex items-center justify-between gap-3 px-3 py-3 md:px-6 md:py-4">
+        <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-gold">{title}</p>
+        <div className="flex flex-shrink-0 items-center gap-2">
+          {pdf && (
+            <a
+              href={pdf}
+              download
+              className="inline-flex items-center gap-2 rounded-full border border-gold/40 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-gold transition hover:bg-gold hover:text-night"
+            >
+              <Download className="h-4 w-4" />
+              PDF
+            </a>
+          )}
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Zatvori"
+            className="flex h-11 w-11 items-center justify-center rounded-full bg-gold text-night shadow-lg transition hover:scale-105"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+
+      <div className={`min-h-0 flex-1 overflow-auto ${zoomed ? '' : 'flex items-center justify-center p-3 md:p-6'}`}>
+        <img
+          src={src}
+          alt={title}
+          onClick={() => setZoomed((z) => !z)}
+          className={
+            zoomed
+              ? 'block w-[260%] max-w-none cursor-zoom-out md:w-[160%]'
+              : 'max-h-full max-w-full cursor-zoom-in object-contain'
+          }
+        />
+      </div>
+
+      <p className="py-3 text-center text-[11px] uppercase tracking-[0.16em] text-cream-100/60">
+        {zoomed ? 'Dodirnite sliku da je vratite' : 'Dodirnite sliku da je uvećate'}
+      </p>
+    </div>
+  );
+};
+
 /** Posebna stranica jednog stana (Vila V i novi projekti; stari projekti koriste popup). */
 const ApartmentPage = ({ slug: slugProp }: ApartmentPageProps) => {
   const params = useParams<{ slug: string; apartment: string }>();
   const slug = slugProp ?? params.slug ?? '';
   const number = parseApartmentNumber(params.apartment);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Uvećana osnova je poseban korak u istoriji, pa je dugme Nazad na telefonu zatvara
+  const planOpen = (location.state as { plan?: boolean } | null)?.plan === true;
+  const openPlan = () => navigate(location.pathname + location.search, { state: { plan: true } });
+  const closePlan = useCallback(() => navigate(-1), [navigate]);
 
   const [data, setData] = useState<BuildingData | null>(null);
   const [state, setState] = useState<'loading' | 'ready' | 'missing'>('loading');
@@ -211,12 +294,11 @@ const ApartmentPage = ({ slug: slugProp }: ApartmentPageProps) => {
           <div className="grid items-start gap-8 pb-12 md:pb-16 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-10 xl:grid-cols-[minmax(0,1fr)_400px] xl:gap-14">
             {/* Velika slika: list stana iz PDF-a */}
             {topImage ? (
-              <a
-                href={apartment.pdf_url ?? topImage}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`group relative block overflow-hidden ${sheet ? 'rounded-xl2 bg-night shadow-royal' : ''}`}
-                aria-label={apartment.pdf_url ? 'Otvori PDF osnovu' : 'Otvori sliku u punoj veličini'}
+              <button
+                type="button"
+                onClick={openPlan}
+                className={`group relative block w-full overflow-hidden text-left ${sheet ? 'rounded-xl2 bg-night shadow-royal' : ''}`}
+                aria-label={`Uvećaj ${sheet ? 'osnovu' : 'prikaz'} stana`}
               >
                 <img
                   src={topImage}
@@ -227,10 +309,10 @@ const ApartmentPage = ({ slug: slugProp }: ApartmentPageProps) => {
                   decoding="async"
                 />
                 <span className="absolute right-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-night/80 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-wider text-gold backdrop-blur transition-opacity duration-300 md:right-4 md:top-4 lg:opacity-0 lg:group-hover:opacity-100">
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  {apartment.pdf_url ? 'Otvori PDF' : 'Uvećaj'}
+                  <ZoomIn className="h-3.5 w-3.5" />
+                  Uvećaj
                 </span>
-              </a>
+              </button>
             ) : (
               <div className="flex aspect-[7/5] items-center justify-center rounded-xl2 bg-royal-sand text-ts-p text-royal-stone">
                 Slike stana uskoro
@@ -334,6 +416,15 @@ const ApartmentPage = ({ slug: slugProp }: ApartmentPageProps) => {
 
       <Footer />
       <ThankYouModal isOpen={isThankYouOpen} onClose={() => setIsThankYouOpen(false)} autoCloseDelay={2000} />
+
+      {planOpen && topImage && (
+        <PlanLightbox
+          src={topImage}
+          title={`Stan ${apartment.number} · ${building.name}`}
+          pdf={apartment.pdf_url}
+          onClose={closePlan}
+        />
+      )}
     </div>
   );
 };

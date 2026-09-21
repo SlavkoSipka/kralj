@@ -7,7 +7,7 @@ import ContactForm from './components/ContactForm';
 import Navigation from './components/Navigation';
 import Footer from './components/Footer';
 import LoadingScreen from './components/LoadingScreen';
-import BackgroundSlideshow from './components/BackgroundSlideshow';
+import HeroVideo from './components/HeroVideo';
 import CookieConsent from './components/CookieConsent';
 import ThankYouModal from './components/ThankYouModal';
 import SectionHeading from './components/SectionHeading';
@@ -16,6 +16,7 @@ import FeaturedApartments from './components/FeaturedApartments';
 import PanoramaSection from './components/PanoramaSection';
 import { useScroll } from './hooks/useScroll';
 import { useParallax } from './hooks/useParallax';
+import { useMediaQuery } from './hooks/useMediaQuery';
 import { useIntersectionObserver } from './hooks/useIntersectionObserver';
 import { useSeo } from './hooks/useSeo';
 import { isSupabaseConfigured } from './lib/supabase';
@@ -25,7 +26,10 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
-const BACKGROUND_IMAGES = ['/images/Rudjinci A1.webp'] as const;
+/** Hero na telefonu: vertikalni dron snimci kompleksa, prvo hero pa solid, ukrug */
+const MOBILE_HERO_VIDEOS = ['/videos/hero.mp4', '/videos/solid.mp4'];
+/** Hero na računaru: isečak horizontalnog dron snimka od 4:22 do kraja, ukrug */
+const DESKTOP_HERO_VIDEOS = ['/videos/hero-horizontal.mp4'];
 
 const LOADING_DELAY = 900;
 
@@ -71,7 +75,7 @@ const VILA5: ProjectCardData = {
   size: '1400 m²',
   apartments: 30,
   features: ['Privatni bazen', 'Uređeno dvorište', 'Parking'],
-  status: 'Uskoro',
+  status: 'Dostupno',
   to: '/vila-5',
 };
 
@@ -205,14 +209,14 @@ const mergeWithDb = (staticData: ProjectCardData, row?: DbBuilding): ProjectCard
 
 function App() {
   const [isVisible, setIsVisible] = useState(false);
-  const currentImageIndex = 0;
   const [, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [dbBuildings, setDbBuildings] = useState<Record<string, DbBuilding>>({});
   const aboutSectionRef = useRef<HTMLDivElement>(null);
 
   const { scrolled, showScrollIndicator, scrollPosition } = useScroll();
-  const { calculateScale, calculateTextOpacity, calculateTextTransform } = useParallax(scrollPosition);
+  const { calculateTextOpacity, calculateTextTransform } = useParallax(scrollPosition);
+  const isMobile = useMediaQuery('(max-width: 767px)');
   useIntersectionObserver();
   useSeo({
     title: 'Prodaja stanova Vrnjačka Banja | Kralj Residence – Novogradnja od investitora',
@@ -252,17 +256,19 @@ function App() {
   return (
     <div className="relative min-h-screen">
       <LoadingScreen onLoadingComplete={() => setIsLoading(false)} />
-      <BackgroundSlideshow
-        images={[...BACKGROUND_IMAGES]}
-        currentIndex={currentImageIndex}
-        calculateScale={calculateScale}
-      />
 
       <div className="relative z-10">
         <Navigation scrolled={scrolled} />
 
         {/* ===================== HERO ===================== */}
         <header className="relative flex min-h-screen items-center">
+          {/* Dron video: vertikalni na telefonu, horizontalni na računaru; svaki uređaj preuzima samo svoj */}
+          {isMobile ? (
+            <HeroVideo key="mobile" videos={MOBILE_HERO_VIDEOS} poster="/videos/posteri/hero.webp" />
+          ) : (
+            <HeroVideo key="desktop" videos={DESKTOP_HERO_VIDEOS} poster="/videos/posteri/hero-horizontal.webp" />
+          )}
+
           {/* Scrim for legibility */}
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent" />
           <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/15" />
@@ -435,6 +441,9 @@ function App() {
           </>
         )}
 
+        {/* ===================== 360° VIRTUELNI OBILAZAK ===================== */}
+        <PanoramaSection />
+
         {/* ===================== IZDVAJAMO IZ PONUDE ===================== */}
         <FeaturedApartments />
 
@@ -460,9 +469,6 @@ function App() {
             </div>
           </div>
         </section>
-
-        {/* ===================== 360° VIRTUELNI OBILAZAK ===================== */}
-        <PanoramaSection />
 
         {/* ===================== O NAMA (light) ===================== */}
         <section id="about" ref={aboutSectionRef} className="section-light">
@@ -522,8 +528,8 @@ function App() {
                 </h2>
                 <p className="mt-5 max-w-2xl text-ts-p leading-relaxed text-cream-100/75">
                   Bilo da vas zanima kupovina stana u nekom od naših završenih projekata, dostupnost i
-                  cene u Vili IV i Royal Aqua kompleksu, ili detalji o novoj Vili V koja je uskoro u
-                  ponudi, tu smo da vam pomognemo. Naš tim vam rado izlazi u susret sa svim informacijama
+                  cene u Vili IV i Royal Aqua kompleksu, ili ponuda u novoj Vili V, čija je prodaja upravo
+                  počela, tu smo da vam pomognemo. Naš tim vam rado izlazi u susret sa svim informacijama
                   o novogradnji u Vrnjačkoj Banji, uslovima kupovine i mogućnostima plaćanja. Pozovite nas
                   ili nam pišite, odgovaramo brzo i bez ikakve obaveze.
                 </p>

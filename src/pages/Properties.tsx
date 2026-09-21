@@ -25,17 +25,17 @@ interface Building {
 
 const BUILDINGS: Building[] = [
   {
-    eyebrow: 'Novo · Uskoro u ponudi',
+    eyebrow: 'Novo · Počela prodaja',
     title: 'Vila V',
     description:
-      'Nastavak projekta Kralj Residence Resort. Novo uređeno dvorište, sopstveni bazen i 30 luksuznih stanova. Novogradnja u Vrnjačkoj Banji koja stiže uskoro.',
+      'Nastavak projekta Kralj Residence Resort. Novo uređeno dvorište, sopstveni bazen i 30 luksuznih stanova. Prodaja je počela, direktno od investitora.',
     card: {
       name: 'Vila V',
       image: '/images/vila-5.webp',
       size: '1400 m²',
       apartments: 30,
       features: ['Privatni bazen', 'Uređeno dvorište', 'Parking'],
-      status: 'Uskoro',
+      status: 'Dostupno',
       to: '/vila-5',
     },
     cardClassName: 'bg-royal-sand border-gold/30',
